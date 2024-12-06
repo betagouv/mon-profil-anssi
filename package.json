@@ -1,0 +1,27 @@
+{
+  "name": "mon-profil-anssi",
+  "version": "1.0.0",
+  "type": "module",
+  "module": "nodenext",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "test": "node --import tsx --test ./tests/**/*.spec.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/betagouv/mon-profil-anssi.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/betagouv/mon-profil-anssi/issues"
+  },
+  "homepage": "https://github.com/betagouv/mon-profil-anssi#readme",
+  "dependencies": {
+    "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2"
+  }
+}
