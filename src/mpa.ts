@@ -1,6 +1,6 @@
 import express from "express";
-import { ressourceProfil } from "./ressourceProfil.js";
-import { ConfigurationServeur } from "./configurationServeur.js";
+import { ressourceProfil } from "./ressourceProfil";
+import { ConfigurationServeur } from "./configurationServeur";
 
 const creeServeur = (configurationServeur: ConfigurationServeur) => {
   const app = express();

@@ -1,13 +1,13 @@
 {
   "name": "mon-profil-anssi",
   "version": "1.0.0",
-  "type": "module",
   "module": "nodenext",
   "description": "",
   "main": "index.ts",
   "scripts": {
     "test": "node --import tsx --test ./tests/**/*.spec.ts",
-    "start": "node --require dotenv/config dist/src/serveur.js"
+    "start": "node --require dotenv/config dist/src/serveur.js",
+    "dev": "nodemon src/serveur.ts"
   },
   "repository": {
     "type": "git",
@@ -31,7 +31,9 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.1",
     "@types/supertest": "^6.0.2",
+    "nodemon": "^3.1.7",
     "supertest": "^7.0.0",
+    "ts-node": "^10.9.2",
     "tsx": "^4.19.2"
   }
 }
