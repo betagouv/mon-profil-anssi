@@ -1,4 +1,4 @@
-import {EntrepotProfil} from "./entrepotProfil.js";
+import { EntrepotProfil } from "./entrepotProfil";
 
 export type ConfigurationServeur = {
     entrepotProfil: EntrepotProfil;

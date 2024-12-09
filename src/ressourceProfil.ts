@@ -1,5 +1,5 @@
 import express from "express";
-import { ConfigurationServeur } from "./configurationServeur.js";
+import { ConfigurationServeur } from "./configurationServeur";
 
 const ressourceProfil = ({ entrepotProfil }: ConfigurationServeur) => {
   const routeur = express.Router();

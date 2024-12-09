@@ -1,5 +1,5 @@
-import { creeServeur } from "./mpa.js";
-import { Profil } from "./profil.js";
+import { creeServeur } from "./mpa";
+import { Profil } from "./profil";
 
 const port = process.env.PORT || 8080;
 

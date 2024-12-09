@@ -1,5 +1,5 @@
-import {Profil} from "./profil.js";
+import { Profil } from "./profil";
 
 export interface EntrepotProfil {
-    parEmail(email: string): Profil | undefined;
+  parEmail(email: string): Profil | undefined;
 }
