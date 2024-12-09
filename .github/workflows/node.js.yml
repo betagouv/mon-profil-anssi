@@ -1,0 +1,31 @@
+name: L'intégration continue
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Construction de MonProfilANSSI
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cloner le dépôt Git
+        uses: actions/checkout@v4
+
+      - name: Utiliser la version Node.js 23
+        uses: actions/setup-node@v3
+        with:
+          node-version: 23
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Contrôler le Typescript du Backend
+        run: npx tsc --noEmit
+
+      - name: Exécuter les tests
+        run: npm test
