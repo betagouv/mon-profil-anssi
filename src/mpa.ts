@@ -1,6 +1,11 @@
 import express from "express";
+import { EntrepotProfil } from "./entrepotProfil.js";
 
-const creeServeur = () => {
+type ConfigurationServeur = {
+  entrepotProfil: EntrepotProfil;
+};
+
+const creeServeur = ({ entrepotProfil }: ConfigurationServeur) => {
   const app = express();
 
   app.get("/profil", (requete, reponse) => {
@@ -8,16 +13,8 @@ const creeServeur = () => {
       reponse.sendStatus(404);
       return;
     }
-    reponse.send({
-      nom: "Dujardin",
-      prenom: "Jean",
-      entite: {
-        siret: "DINUM",
-        departement: "33",
-      },
-      domainesSpecialite: ["RSSI", "JURI"],
-      telephone: "0607080910",
-    });
+    const profil = entrepotProfil.parEmail("jean@beta.fr");
+    reponse.send(profil);
   });
 
   return app;
