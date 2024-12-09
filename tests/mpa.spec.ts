@@ -58,4 +58,10 @@ describe("Sur demande du profil", function () {
 
     assert.equal(reponse.status, 404);
   });
+
+  it("répond 400 lorque l'email n'est pas fourni", async () => {
+    const reponse = await request(serveur).get("/profil");
+
+    assert.equal(reponse.status, 400);
+  });
 });
