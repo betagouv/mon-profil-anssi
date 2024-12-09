@@ -6,7 +6,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "test": "node --import tsx --test ./tests/**/*.spec.ts"
+    "test": "node --import tsx --test ./tests/**/*.spec.ts",
+    "start": "node --require dotenv/config dist/src/serveur.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
   },
   "homepage": "https://github.com/betagouv/mon-profil-anssi#readme",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "typescript": "^5.7.2"
   },
   "devDependencies": {
