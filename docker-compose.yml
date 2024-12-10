@@ -24,7 +24,8 @@ services:
     <<: *configuration-base
 
     command: bash -c "
-       npx nodemon src/serveur.ts
+      npx knex migrate:latest
+      && npx nodemon src/serveur.ts
       "
     environment:
       - NODE_ENV=development
