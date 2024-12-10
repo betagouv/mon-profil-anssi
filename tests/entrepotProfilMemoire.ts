@@ -4,7 +4,7 @@ import { EntrepotProfil } from "../src/entrepotProfil.js";
 export class EntrepotProfilMemoire implements EntrepotProfil {
   items: Profil[] = [];
 
-  parEmail(email: string): Profil | undefined {
+  async parEmail(email: string): Promise<Profil | undefined> {
     return this.items.find((p) => p.email === email);
   }
 
