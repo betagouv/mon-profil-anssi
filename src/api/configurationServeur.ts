@@ -1,4 +1,4 @@
-import { EntrepotProfil } from "./entrepotProfil";
+import { EntrepotProfil } from "../metier/entrepotProfil";
 import { Middleware } from "./middleware";
 
 export type ConfigurationServeur = {

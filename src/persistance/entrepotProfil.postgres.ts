@@ -1,6 +1,6 @@
-import { Profil } from "./profil";
+import { Profil } from "../metier/profil";
 import knex from "knex";
-import { EntrepotProfil } from "./entrepotProfil";
+import { EntrepotProfil } from "../metier/entrepotProfil";
 import { knexConfig } from "./knexfile";
 
 type NodeEnv = "development" | "production";

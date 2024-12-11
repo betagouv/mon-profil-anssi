@@ -1,6 +1,6 @@
 import { beforeEach, describe, it } from "node:test";
 import { Request, Response } from "express";
-import { fabriqueMiddleware, Middleware } from "../src/middleware";
+import { fabriqueMiddleware, Middleware } from "../../src/api/middleware";
 import assert from "assert";
 import { createRequest, createResponse } from "node-mocks-http";
 

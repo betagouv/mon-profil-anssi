@@ -1,5 +1,5 @@
-import { Profil } from "../src/profil.js";
-import { EntrepotProfil } from "../src/entrepotProfil.js";
+import { Profil } from "../../src/metier/profil";
+import { EntrepotProfil } from "../../src/metier/entrepotProfil";
 
 export class EntrepotProfilMemoire implements EntrepotProfil {
   items: Profil[] = [];

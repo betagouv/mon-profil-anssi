@@ -1,1 +1,1 @@
-module.exports = require("./src/knexfile.ts").knexConfig;
+module.exports = require("./src/persistance/knexfile.ts").knexConfig;

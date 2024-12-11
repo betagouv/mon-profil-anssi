@@ -1,6 +1,6 @@
-import { creeServeur } from "./mpa";
-import { entrepotProfilPostgres } from "./entrepotProfilPostgres";
-import { fabriqueMiddleware } from "./middleware";
+import { creeServeur } from "./api/mpa";
+import { entrepotProfilPostgres } from "./persistance/entrepotProfil.postgres";
+import { fabriqueMiddleware } from "./api/middleware";
 
 const port = process.env.PORT || 3001;
 
