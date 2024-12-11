@@ -8,7 +8,7 @@ export class EntrepotProfilMemoire implements EntrepotProfil {
     return this.items.find((p) => p.email === email);
   }
 
-  ajoute(profil: Profil) {
+  async ajoute(profil: Profil) {
     this.items.push(profil);
   }
 }
