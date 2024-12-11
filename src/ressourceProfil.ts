@@ -1,10 +1,10 @@
 import express from "express";
 import { ConfigurationServeur } from "./configurationServeur";
 
-const ressourceProfil = ({ entrepotProfil }: ConfigurationServeur) => {
+const ressourceProfil = ({ entrepotProfil, middleware }: ConfigurationServeur) => {
   const routeur = express.Router();
 
-  routeur.get("/", (requete, reponse) => {
+  routeur.get("/", middleware.aseptise("email"), (requete, reponse) => {
     if (!requete.query.email) {
       reponse.sendStatus(400);
       return;
