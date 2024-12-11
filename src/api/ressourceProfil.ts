@@ -1,13 +1,13 @@
-import express from "express";
+import { Router, Request, Response } from "express";
 import { ConfigurationServeur } from "./configurationServeur";
 
 const ressourceProfil = ({
   entrepotProfil,
   middleware,
 }: ConfigurationServeur) => {
-  const routeur = express.Router();
+  const routeur = Router();
 
-  routeur.get("/", middleware.aseptise("email"), async (requete, reponse) => {
+  routeur.get("/", middleware.aseptise("email"), async (requete: Request, reponse: Response) => {
     if (!requete.query.email) {
       reponse.sendStatus(400);
       return;
