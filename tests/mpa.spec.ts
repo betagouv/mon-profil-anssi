@@ -4,12 +4,14 @@ import request from "supertest";
 import { creeServeur } from "../src/mpa.js";
 import { Express } from "express";
 import { EntrepotProfilMemoire } from "./entrepotProfilMemoire.js";
+import { fabriqueMiddleware } from "../src/middleware";
 
 describe("Sur demande du profil", function () {
   let serveur: Express;
+  let entrepotProfil: EntrepotProfilMemoire;
 
   beforeEach(() => {
-    const entrepotProfil = new EntrepotProfilMemoire();
+    entrepotProfil = new EntrepotProfilMemoire();
     const jeanDujardin = {
       email: "jean@beta.fr",
       nom: "Dujardin",
@@ -22,7 +24,7 @@ describe("Sur demande du profil", function () {
       telephone: "0607080910",
     };
     entrepotProfil.ajoute(jeanDujardin);
-    serveur = creeServeur({ entrepotProfil });
+    serveur = creeServeur({ entrepotProfil, middleware: fabriqueMiddleware() });
   });
 
   it("répond 200", async function () {
@@ -63,5 +65,18 @@ describe("Sur demande du profil", function () {
     const reponse = await request(serveur).get("/profil");
 
     assert.equal(reponse.status, 400);
+  });
+
+  it("aseptise les paramètres", async () => {
+    const jeanInferieurDujardin = {
+      email: "jean&lt;Dujardin",
+      nom: "Jean Dujardin",
+    };
+    entrepotProfil.ajoute(jeanInferieurDujardin);
+
+    const reponse = await request(serveur).get("/profil?email=jean<Dujardin");
+
+    assert.equal(reponse.status, 200);
+    assert.equal(reponse.body.nom, "Jean Dujardin");
   });
 });

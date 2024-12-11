@@ -1,5 +1,7 @@
 import { EntrepotProfil } from "./entrepotProfil";
+import { Middleware } from "./middleware";
 
 export type ConfigurationServeur = {
-    entrepotProfil: EntrepotProfil;
+  entrepotProfil: EntrepotProfil;
+  middleware: Middleware;
 };
