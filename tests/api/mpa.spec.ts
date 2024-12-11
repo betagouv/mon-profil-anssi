@@ -1,10 +1,10 @@
 import { beforeEach, describe, it } from "node:test";
 import * as assert from "assert";
 import request from "supertest";
-import { creeServeur } from "../src/mpa.js";
+import { creeServeur } from "../../src/api/mpa";
 import { Express } from "express";
-import { EntrepotProfilMemoire } from "./entrepotProfilMemoire.js";
-import { fabriqueMiddleware } from "../src/middleware";
+import { EntrepotProfilMemoire } from "../persistance/entrepotProfil.memoire";
+import { fabriqueMiddleware } from "../../src/api/middleware";
 
 describe("Sur demande du profil", function () {
   let serveur: Express;
