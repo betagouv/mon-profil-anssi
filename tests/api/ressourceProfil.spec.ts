@@ -5,6 +5,7 @@ import { creeServeur } from "../../src/api/mpa";
 import { Express } from "express";
 import { EntrepotProfilMemoire } from "../persistance/entrepotProfil.memoire";
 import { fabriqueMiddleware } from "../../src/api/middleware";
+import {Profil} from "../../src/metier/profil";
 
 describe("Sur demande du profil", function () {
   let serveur: Express;
@@ -23,7 +24,7 @@ describe("Sur demande du profil", function () {
       domainesSpecialite: ["RSSI", "JURI"],
       telephone: "0607080910",
     };
-    entrepotProfil.ajoute(jeanDujardin);
+    entrepotProfil.ajoute(new Profil(jeanDujardin));
     serveur = creeServeur({ entrepotProfil, middleware: fabriqueMiddleware() });
   });
 
@@ -44,12 +45,6 @@ describe("Sur demande du profil", function () {
       email: "jean@beta.fr",
       nom: "Dujardin",
       prenom: "Jean",
-      entite: {
-        siret: "DINUM",
-        departement: "33",
-      },
-      domainesSpecialite: ["RSSI", "JURI"],
-      telephone: "0607080910",
     });
   });
 
@@ -73,7 +68,7 @@ describe("Sur demande du profil", function () {
       nom: "Jean Dujardin",
       prenom: "",
     };
-    await entrepotProfil.ajoute(jeanInferieurDujardin);
+    await entrepotProfil.ajoute(new Profil(jeanInferieurDujardin));
 
     const reponse = await request(serveur).get("/profil?email=jean<Dujardin");
 
