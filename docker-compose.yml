@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 x-app: &configuration-base
   build:
@@ -16,7 +16,7 @@ services:
     networks:
       - mpa-network
     ports:
-      - '5433:5432'
+      - "5433:5432"
     volumes:
       - dbvol:/var/lib/postgresql/data
 
@@ -32,7 +32,7 @@ services:
     networks:
       - mpa-network
     ports:
-      - '${PORT_MPA}:3001'
+      - "${PORT_MPA}:3001"
     depends_on:
       - mpa-db
 
