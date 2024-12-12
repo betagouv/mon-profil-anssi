@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { ConfigurationServeur } from "./configurationServeur";
 import { versProfilAPI } from "./profilAPI";
 
@@ -9,16 +9,15 @@ const ressourceProfil = ({
   const routeur = Router();
 
   routeur.get(
-    "/",
+    "/:email",
     middleware.aseptise("email"),
     async (requete: Request, reponse: Response) => {
-      if (!requete.query.email) {
+      const { email } = requete.params;
+      if (!email) {
         reponse.sendStatus(400);
         return;
       }
-      const profil = await entrepotProfil.parEmail(
-        requete.query.email as string,
-      );
+      const profil = await entrepotProfil.parEmail(email as string);
       if (!profil) {
         reponse.sendStatus(404);
         return;
