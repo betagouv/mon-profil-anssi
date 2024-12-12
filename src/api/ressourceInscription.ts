@@ -16,6 +16,11 @@ const ressourceInscription = ({
       const serviceClient = requete.header("x-id-client") as string;
 
       let profil = await entrepotProfil.parEmail(email);
+      if (profil && profil.estInscritA(serviceClient)) {
+        reponse.sendStatus(200);
+        return;
+      }
+
       if (!profil) {
         profil = new Profil({
           email,
