@@ -13,11 +13,18 @@ const ressourceInscription = ({
     middleware.aseptise("email", "nom", "prenom"),
     async (requete: Request, reponse: Response) => {
       const { email, nom, prenom } = requete.body;
-      await entrepotProfil.ajoute(new Profil({
-        email,
-        nom,
-        prenom,
-      }));
+      const serviceClient = requete.header("x-id-client") as string;
+
+      let profil = await entrepotProfil.parEmail(email);
+      if (!profil) {
+        profil = new Profil({
+          email,
+          nom,
+          prenom,
+        });
+      }
+      profil.inscrisAuService(serviceClient);
+      await entrepotProfil.ajoute(profil);
       reponse.sendStatus(201);
     },
   );
