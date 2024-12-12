@@ -71,8 +71,9 @@ describe("Sur demande du profil", function () {
     const jeanInferieurDujardin = {
       email: "jean&lt;Dujardin",
       nom: "Jean Dujardin",
+      prenom: "",
     };
-    entrepotProfil.ajoute(jeanInferieurDujardin);
+    await entrepotProfil.ajoute(jeanInferieurDujardin);
 
     const reponse = await request(serveur).get("/profil?email=jean<Dujardin");
 
