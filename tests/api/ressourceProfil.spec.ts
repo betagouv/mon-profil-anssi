@@ -29,7 +29,7 @@ describe("Sur demande du profil", function () {
 
   it("répond 200", async function () {
     const reponse = await request(serveur)
-      .get("/profil?email=jean@beta.fr")
+      .get("/profil/jean@beta.fr")
       .set("Accept", "application/json");
 
     assert.equal(reponse.status, 200);
@@ -37,7 +37,7 @@ describe("Sur demande du profil", function () {
 
   it("renvoie les données du profil", async () => {
     const reponse = await request(serveur)
-      .get("/profil?email=jean@beta.fr")
+      .get("/profil/jean@beta.fr")
       .set("Accept", "application/json");
 
     assert.deepEqual(reponse.body, {
@@ -55,16 +55,10 @@ describe("Sur demande du profil", function () {
 
   it("répond 404 lorsque le profil est inconnu", async () => {
     const reponse = await request(serveur)
-      .get("/profil?email=inconnu@beta.fr")
+      .get("/profil/inconnu@beta.fr")
       .set("Accept", "application/json");
 
     assert.equal(reponse.status, 404);
-  });
-
-  it("répond 400 lorque l'email n'est pas fourni", async () => {
-    const reponse = await request(serveur).get("/profil");
-
-    assert.equal(reponse.status, 400);
   });
 
   it("aseptise les paramètres", async () => {
@@ -75,7 +69,7 @@ describe("Sur demande du profil", function () {
     };
     await entrepotProfil.ajoute(jeanInferieurDujardin);
 
-    const reponse = await request(serveur).get("/profil?email=jean<Dujardin");
+    const reponse = await request(serveur).get("/profil/jean<Dujardin");
 
     assert.equal(reponse.status, 200);
     assert.equal(reponse.body.nom, "Jean Dujardin");
