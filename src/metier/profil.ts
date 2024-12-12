@@ -2,7 +2,7 @@ export class Profil {
   email: string;
   nom: string;
   prenom: string;
-  services: string[] = [];
+  inscriptions: string[] = [];
 
   constructor({
     email,
@@ -19,10 +19,14 @@ export class Profil {
   }
 
   inscrisAuService(service: string) {
-    this.services.push(service);
+    this.inscriptions.push(service);
   }
 
   estInscritA(service: string): boolean {
-    return this.services.includes(service);
+    return this.inscriptions.includes(service);
+  }
+
+  nombreInscriptions() {
+    return this.inscriptions.length;
   }
 }
