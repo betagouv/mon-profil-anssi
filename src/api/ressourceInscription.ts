@@ -27,9 +27,12 @@ const ressourceInscription = ({
           nom,
           prenom,
         });
+        profil.inscrisAuService(serviceClient);
         await entrepotProfil.ajoute(profil);
+      } else {
+        profil.inscrisAuService(serviceClient);
+        await entrepotProfil.metsAJour(profil);
       }
-      profil.inscrisAuService(serviceClient);
       reponse.sendStatus(201);
     },
   );

@@ -12,13 +12,43 @@ const connexion = () => {
   return knex(knexConfig[nodeEnv as NodeEnv]);
 };
 export const entrepotProfilPostgres: EntrepotProfil = {
+  async metsAJour(profil: Profil): Promise<void> {
+    const db = connexion();
+    const { email, prenom, nom } = profil;
+    await db("profils")
+      .where("email", profil.email)
+      .update({ email, prenom, nom });
+    await db("inscriptions").where("email", profil.email).delete();
+    await db("inscriptions").insert(
+      profil.inscriptions.map((inscription) => ({
+        email: profil.email,
+        service: inscription,
+        date_inscription: new Date(),
+      })),
+    );
+  },
+
   async ajoute(profil: Profil): Promise<void> {
     const db = connexion();
     const { email, prenom, nom } = profil;
     await db("profils").insert({ email, prenom, nom });
+    await db("inscriptions").insert(
+      profil.inscriptions.map((inscription) => ({
+        email: profil.email,
+        service: inscription,
+        date_inscription: new Date(),
+      })),
+    );
   },
+
   async parEmail(email: string): Promise<Profil | undefined> {
     const db = connexion();
-    return db("profils").where({ email }).first().select();
+    const donneesProfil = await db("profils").where({ email }).first().select();
+    const profil = new Profil(donneesProfil);
+    const donneesInscriptions = await db("inscriptions")
+      .where("email", profil.email)
+      .select();
+    profil.inscriptions = donneesInscriptions.map((donnees) => donnees.service);
+    return profil;
   },
 };
