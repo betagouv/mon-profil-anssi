@@ -6,6 +6,7 @@ import { Express } from "express";
 import { EntrepotProfilMemoire } from "../persistance/entrepotProfil.memoire";
 import { fabriqueMiddleware } from "../../src/api/middleware";
 import { Profil } from "../../src/metier/profil";
+import { adaptateurHorloge } from "../../src/metier/adaptateurHorloge";
 
 describe("Sur demande du profil", function () {
   let serveur: Express;
@@ -25,7 +26,11 @@ describe("Sur demande du profil", function () {
       telephone: "0607080910",
     };
     entrepotProfil.ajoute(new Profil(jeanDujardin));
-    serveur = creeServeur({ entrepotProfil, middleware: fabriqueMiddleware() });
+    serveur = creeServeur({
+      entrepotProfil,
+      middleware: fabriqueMiddleware(),
+      adaptateurHorloge: adaptateurHorloge,
+    });
   });
 
   it("répond 200", async function () {

@@ -2,6 +2,7 @@ import { Profil } from "../metier/profil";
 import knex from "knex";
 import { EntrepotProfil } from "../metier/entrepotProfil";
 import { knexConfig } from "./knexfile";
+import { Inscription } from "../metier/inscription";
 
 type NodeEnv = "development" | "production";
 
@@ -22,8 +23,8 @@ export const entrepotProfilPostgres: EntrepotProfil = {
     await db("inscriptions").insert(
       profil.inscriptions.map((inscription) => ({
         email: profil.email,
-        service: inscription,
-        date_inscription: new Date(),
+        service: inscription.service,
+        date_inscription: inscription.date,
       })),
     );
   },
@@ -35,8 +36,8 @@ export const entrepotProfilPostgres: EntrepotProfil = {
     await db("inscriptions").insert(
       profil.inscriptions.map((inscription) => ({
         email: profil.email,
-        service: inscription,
-        date_inscription: new Date(),
+        service: inscription.service,
+        date_inscription: inscription.date,
       })),
     );
   },
@@ -48,7 +49,9 @@ export const entrepotProfilPostgres: EntrepotProfil = {
     const donneesInscriptions = await db("inscriptions")
       .where("email", profil.email)
       .select();
-    profil.inscriptions = donneesInscriptions.map((donnees) => donnees.service);
+    profil.inscriptions = donneesInscriptions.map(
+      (donnees) => new Inscription(donnees.service, donnees.date_inscription),
+    );
     return profil;
   },
 };

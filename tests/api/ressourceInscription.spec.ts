@@ -6,6 +6,7 @@ import { fabriqueMiddleware } from "../../src/api/middleware";
 import request from "supertest";
 import assert from "assert";
 import { Profil } from "../../src/metier/profil";
+import { adaptateurHorloge } from "../../src/metier/adaptateurHorloge";
 
 describe("Sur demande d'inscription", () => {
   let serveur: Express;
@@ -13,7 +14,14 @@ describe("Sur demande d'inscription", () => {
 
   beforeEach(() => {
     entrepotProfil = new EntrepotProfilMemoire();
-    serveur = creeServeur({ entrepotProfil, middleware: fabriqueMiddleware() });
+    const adaptateurHorloge = {
+      maintenant: () => new Date("2024-12-25"),
+    };
+    serveur = creeServeur({
+      entrepotProfil,
+      middleware: fabriqueMiddleware(),
+      adaptateurHorloge,
+    });
   });
 
   it("ajoute le profil", async () => {
@@ -48,6 +56,10 @@ describe("Sur demande d'inscription", () => {
 
     const profil = await entrepotProfil.parEmail("jean@beta.fr");
     assert.equal(profil!.estInscritA("mss"), true);
+    assert.deepStrictEqual(
+      profil!.dateDInscriptionA("mss"),
+      new Date("2024-12-25"),
+    );
   });
 
   describe("pour un utilisateur déjà inscrit", () => {
@@ -57,7 +69,7 @@ describe("Sur demande d'inscription", () => {
         nom: "Dujardin",
         prenom: "Jean",
       });
-      profilInscrit.inscrisAuService("mss");
+      profilInscrit.inscrisAuService("mss", adaptateurHorloge);
       await entrepotProfil.ajoute(profilInscrit);
     });
 
