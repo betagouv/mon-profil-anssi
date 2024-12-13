@@ -15,10 +15,18 @@ const connexion = () => {
 export const entrepotProfilPostgres: EntrepotProfil = {
   async metsAJour(profil: Profil): Promise<void> {
     const db = connexion();
-    const { email, prenom, nom } = profil;
+    const { email, prenom, nom, telephone, organisation, domainesSpecialite } =
+      profil;
     await db("profils")
       .where("email", profil.email)
-      .update({ email, prenom, nom });
+      .update({
+        email,
+        prenom,
+        nom,
+        telephone,
+        organisation,
+        domaines_specialite: JSON.stringify(domainesSpecialite),
+      });
     await db("inscriptions").where("email", profil.email).delete();
     await db("inscriptions").insert(
       profil.inscriptions.map((inscription) => ({
@@ -31,8 +39,16 @@ export const entrepotProfilPostgres: EntrepotProfil = {
 
   async ajoute(profil: Profil): Promise<void> {
     const db = connexion();
-    const { email, prenom, nom } = profil;
-    await db("profils").insert({ email, prenom, nom });
+    const { email, prenom, nom, telephone, domainesSpecialite, organisation } =
+      profil;
+    await db("profils").insert({
+      email,
+      prenom,
+      nom,
+      telephone,
+      organisation,
+      domaines_specialite: JSON.stringify(domainesSpecialite),
+    });
     await db("inscriptions").insert(
       profil.inscriptions.map((inscription) => ({
         email: profil.email,
@@ -45,7 +61,12 @@ export const entrepotProfilPostgres: EntrepotProfil = {
   async parEmail(email: string): Promise<Profil | undefined> {
     const db = connexion();
     const donneesProfil = await db("profils").where({ email }).first().select();
-    const profil = new Profil(donneesProfil);
+
+    if (!donneesProfil) return undefined;
+
+    const { domaines_specialite: domainesSpecialite, ...autresDonnees } =
+      donneesProfil;
+    const profil = new Profil({ domainesSpecialite, ...autresDonnees });
     const donneesInscriptions = await db("inscriptions")
       .where("email", profil.email)
       .select();

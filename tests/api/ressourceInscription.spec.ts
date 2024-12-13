@@ -35,16 +35,33 @@ describe("Sur demande d'inscription", () => {
   });
 
   it("aseptise les paramètres", async () => {
-    await request(serveur).post("/inscription").send({
-      email: "  jean@beta.fr",
-      prenom: ">Jean",
-      nom: "<Dujardin",
-    });
+    await request(serveur)
+      .post("/inscription")
+      .send({
+        email: "  jean@beta.fr",
+        prenom: ">Jean",
+        nom: "<Dujardin",
+        telephone: "<Telephone",
+        domainesSpecialite: ["<DomainesSpecialite1", "<DomainesSpecialite2"],
+        organisation: {
+          nom: ">Nom",
+          siret: ">Siret",
+          departement: ">33",
+        },
+      });
 
     const profil = await entrepotProfil.parEmail("jean@beta.fr");
     assert.equal(profil!.email, "jean@beta.fr");
     assert.equal(profil!.prenom, "&gt;Jean");
     assert.equal(profil!.nom, "&lt;Dujardin");
+    assert.equal(profil!.telephone, "&lt;Telephone");
+    assert.deepEqual(profil!.domainesSpecialite, [
+      "&lt;DomainesSpecialite1",
+      "&lt;DomainesSpecialite2",
+    ]);
+    assert.equal(profil!.organisation.nom, "&gt;Nom");
+    assert.equal(profil!.organisation.siret, "&gt;Siret");
+    assert.equal(profil!.organisation.departement, "&gt;33");
   });
 
   it("inscrit l'utilisateur au service", async () => {
@@ -69,7 +86,7 @@ describe("Sur demande d'inscription", () => {
         nom: "Dujardin",
         prenom: "Jean",
         domainesSpecialite: [],
-        organisation: {},
+        organisation: { nom: "DINUM", departement: "33", siret: "12345" },
       });
       profilInscrit.inscrisAuService("mss", adaptateurHorloge);
       await entrepotProfil.ajoute(profilInscrit);
