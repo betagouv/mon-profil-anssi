@@ -64,6 +64,20 @@ describe("Sur demande d'inscription", () => {
     assert.equal(profil!.organisation.departement, "&gt;33");
   });
 
+  it("aseptise le header x-id-client", async () => {
+    await request(serveur)
+      .post("/inscription")
+      .set("x-id-client", "<mss")
+      .send({
+        email: "jean@beta.fr",
+        prenom: "Jean",
+        nom: "Dujardin",
+      });
+
+    const profil = await entrepotProfil.parEmail("jean@beta.fr");
+    assert.equal(profil!.estInscritA("&lt;mss"), true);
+  });
+
   it("inscrit l'utilisateur au service", async () => {
     await request(serveur).post("/inscription").set("x-id-client", "mss").send({
       email: "jean@beta.fr",
