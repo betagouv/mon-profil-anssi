@@ -68,6 +68,8 @@ describe("Sur demande d'inscription", () => {
         email: "jean@beta.fr",
         nom: "Dujardin",
         prenom: "Jean",
+        domainesSpecialite: [],
+        organisation: {},
       });
       profilInscrit.inscrisAuService("mss", adaptateurHorloge);
       await entrepotProfil.ajoute(profilInscrit);

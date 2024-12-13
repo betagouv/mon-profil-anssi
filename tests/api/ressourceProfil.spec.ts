@@ -18,8 +18,9 @@ describe("Sur demande du profil", function () {
       email: "jean@beta.fr",
       nom: "Dujardin",
       prenom: "Jean",
-      entite: {
-        siret: "DINUM",
+      organisation: {
+        nom: "DINUM",
+        siret: "12345678",
         departement: "33",
       },
       domainesSpecialite: ["RSSI", "JURI"],
@@ -50,6 +51,13 @@ describe("Sur demande du profil", function () {
       email: "jean@beta.fr",
       nom: "Dujardin",
       prenom: "Jean",
+      organisation: {
+        nom: "DINUM",
+        siret: "12345678",
+        departement: "33",
+      },
+      domainesSpecialite: ["RSSI", "JURI"],
+      telephone: "0607080910",
     });
   });
 
@@ -72,6 +80,8 @@ describe("Sur demande du profil", function () {
       email: "jean&lt;Dujardin",
       nom: "Jean Dujardin",
       prenom: "",
+      organisation: {},
+      domainesSpecialite: [],
     };
     await entrepotProfil.ajoute(new Profil(jeanInferieurDujardin));
 

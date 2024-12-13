@@ -27,6 +27,8 @@ const ressourceInscription = ({
           email,
           nom,
           prenom,
+          organisation: {},
+          domainesSpecialite: [],
         });
         profil.inscrisAuService(serviceClient, adaptateurHorloge);
         await entrepotProfil.ajoute(profil);
