@@ -9,6 +9,19 @@ import { Profil } from "../../src/metier/profil";
 import { adaptateurHorloge } from "../../src/metier/adaptateurHorloge";
 
 describe("Sur demande d'inscription", () => {
+  const jeanDujardin = {
+    email: "jean@beta.fr",
+    nom: "Dujardin",
+    prenom: "Jean",
+    organisation: {
+      nom: "DINUM",
+      siret: "12345678",
+      departement: "33",
+    },
+    domainesSpecialite: ["RSSI", "JURI"],
+    telephone: "0607080910",
+  };
+
   let serveur: Express;
   let entrepotProfil: EntrepotProfilMemoire;
 
@@ -27,7 +40,7 @@ describe("Sur demande d'inscription", () => {
   it("ajoute le profil", async () => {
     const reponse = await request(serveur)
       .post("/inscription")
-      .send({ email: "jean@beta.fr" });
+      .send(jeanDujardin);
 
     const profil = await entrepotProfil.parEmail("jean@beta.fr");
     assert.equal(reponse.status, 201);
@@ -68,22 +81,27 @@ describe("Sur demande d'inscription", () => {
     await request(serveur)
       .post("/inscription")
       .set("x-id-client", "<mss")
-      .send({
-        email: "jean@beta.fr",
-        prenom: "Jean",
-        nom: "Dujardin",
-      });
+      .send(jeanDujardin);
 
     const profil = await entrepotProfil.parEmail("jean@beta.fr");
     assert.equal(profil!.estInscritA("&lt;mss"), true);
   });
 
+  it("jette une erreur 400 en cas d'erreur de validation", async () => {
+    const reponse = await request(serveur)
+      .post("/inscription")
+      .set("x-id-client", "mss")
+      .send({});
+
+    assert.equal(reponse.badRequest, true);
+    assert.equal(reponse.body.erreur, "Le champ [email] est obligatoire");
+  });
+
   it("inscrit l'utilisateur au service", async () => {
-    await request(serveur).post("/inscription").set("x-id-client", "mss").send({
-      email: "jean@beta.fr",
-      prenom: "Jean",
-      nom: "Dujardin",
-    });
+    await request(serveur)
+      .post("/inscription")
+      .set("x-id-client", "mss")
+      .send(jeanDujardin);
 
     const profil = await entrepotProfil.parEmail("jean@beta.fr");
     assert.equal(profil!.estInscritA("mss"), true);
