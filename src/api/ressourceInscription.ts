@@ -18,6 +18,7 @@ const ressourceInscription = ({
       "telephone",
       "domainesSpecialite",
       "organisation.*",
+      "x-id-client",
     ),
     async (requete: Request, reponse: Response) => {
       const {
