@@ -27,9 +27,9 @@ const ressourceInscription = ({
           nom,
           prenom,
         });
+        await entrepotProfil.ajoute(profil);
       }
       profil.inscrisAuService(serviceClient);
-      await entrepotProfil.ajoute(profil);
       reponse.sendStatus(201);
     },
   );
