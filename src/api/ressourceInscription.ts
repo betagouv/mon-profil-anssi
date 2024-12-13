@@ -5,6 +5,7 @@ import { Profil } from "../metier/profil";
 const ressourceInscription = ({
   entrepotProfil,
   middleware,
+  adaptateurHorloge,
 }: ConfigurationServeur) => {
   const routeur = Router();
 
@@ -27,10 +28,10 @@ const ressourceInscription = ({
           nom,
           prenom,
         });
-        profil.inscrisAuService(serviceClient);
+        profil.inscrisAuService(serviceClient, adaptateurHorloge);
         await entrepotProfil.ajoute(profil);
       } else {
-        profil.inscrisAuService(serviceClient);
+        profil.inscrisAuService(serviceClient, adaptateurHorloge);
         await entrepotProfil.metsAJour(profil);
       }
       reponse.sendStatus(201);

@@ -1,9 +1,11 @@
+import { AdaptateurHorloge } from "./adaptateurHorloge";
+import { Inscription } from "./inscription";
+
 export class Profil {
   email: string;
   nom: string;
   prenom: string;
-  inscriptions: string[] = [];
-
+  inscriptions: Inscription[] = [];
   constructor({
     email,
     nom,
@@ -18,12 +20,22 @@ export class Profil {
     this.prenom = prenom;
   }
 
-  inscrisAuService(service: string) {
-    this.inscriptions.push(service);
+  inscrisAuService(service: string, adaptateurHorloge: AdaptateurHorloge) {
+    this.inscriptions.push(
+      new Inscription(service, adaptateurHorloge.maintenant()),
+    );
   }
 
   estInscritA(service: string): boolean {
-    return this.inscriptions.includes(service);
+    return this.inscriptions.some(
+      (inscription) => inscription.service === service,
+    );
+  }
+
+  dateDInscriptionA(service: string): Date | undefined {
+    return this.inscriptions.find(
+      (inscription) => inscription.service === service,
+    )?.date;
   }
 
   nombreInscriptions() {
