@@ -89,7 +89,7 @@ describe("Sur demande d'inscription", () => {
       });
 
     const profil = await entrepotProfil.parEmail("jean@beta.fr");
-    assert.deepEqual(profil!.services, ["mss"]);
+    assert.equal(profil!.nombreInscriptions(), 1);
     assert.equal(reponse.status, 200);
   });
 });
