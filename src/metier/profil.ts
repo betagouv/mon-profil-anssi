@@ -2,7 +2,7 @@ import { AdaptateurHorloge } from "./adaptateurHorloge";
 import { Inscription } from "./inscription";
 import { Organisation } from "./organisation";
 
-type DonneesProfil = {
+type DonneesCreationProfil = {
   email: string;
   nom: string;
   prenom: string;
@@ -10,6 +10,8 @@ type DonneesProfil = {
   domainesSpecialite: string[];
   telephone?: string;
 };
+
+type DonneesMiseAJourProfil = Omit<Partial<DonneesCreationProfil>, 'email'>;
 
 export class Profil {
   email: string;
@@ -19,6 +21,7 @@ export class Profil {
   domainesSpecialite: string[];
   telephone?: string;
   inscriptions: Inscription[] = [];
+
   constructor({
     email,
     nom,
@@ -26,7 +29,7 @@ export class Profil {
     organisation,
     domainesSpecialite,
     telephone,
-  }: DonneesProfil) {
+  }: DonneesCreationProfil) {
     this.email = email;
     this.nom = nom;
     this.prenom = prenom;
@@ -55,5 +58,19 @@ export class Profil {
 
   nombreInscriptions() {
     return this.inscriptions.length;
+  }
+
+  metsAJour({
+    prenom,
+    nom,
+    telephone,
+    organisation,
+    domainesSpecialite,
+  }: DonneesMiseAJourProfil) {
+    if (prenom) this.prenom = prenom;
+    if (nom) this.nom = nom;
+    if (telephone) this.telephone = telephone;
+    if (organisation) this.organisation = organisation;
+    if (domainesSpecialite) this.domainesSpecialite = domainesSpecialite;
   }
 }

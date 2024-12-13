@@ -99,8 +99,9 @@ describe("Sur demande d'inscription", () => {
         email: "jean@beta.fr",
         nom: "Dujardin",
         prenom: "Jean",
-        domainesSpecialite: [],
+        domainesSpecialite: ["RSSI"],
         organisation: { nom: "DINUM", departement: "33", siret: "12345" },
+        telephone: "1234",
       });
       profilInscrit.inscrisAuService("mss", adaptateurHorloge);
       await entrepotProfil.ajoute(profilInscrit);
@@ -147,6 +148,49 @@ describe("Sur demande d'inscription", () => {
       const profil = await entrepotProfil.parEmail("jean@beta.fr");
       assert.equal(profil!.nombreInscriptions(), 1);
       assert.equal(reponse.status, 200);
+    });
+
+    it("mets à jour le profil avec de nouvelles informations", async () => {
+      await request(serveur)
+        .post("/inscription")
+        .set("x-id-client", "mac")
+        .send({
+          email: "jean@beta.fr",
+          prenom: "Jeanne",
+          nom: "Dujardine",
+          organisation: { nom: "ANSSI", departement: "75", siret: "9876" },
+          telephone: "0606",
+          domainesSpecialite: ["JURI"],
+        });
+
+      const profil = await entrepotProfil.parEmail("jean@beta.fr");
+      assert.equal(profil!.prenom, "Jeanne");
+      assert.equal(profil!.nom, "Dujardine");
+      assert.equal(profil!.telephone, "0606");
+      assert.deepEqual(profil!.organisation, {
+        nom: "ANSSI",
+        departement: "75",
+        siret: "9876",
+      });
+      assert.deepEqual(profil!.domainesSpecialite, ["JURI"]);
+    });
+
+    it("n'ecrase avec des informations non fournies", async () => {
+      await request(serveur)
+        .post("/inscription")
+        .set("x-id-client", "mac")
+        .send({ email: "jean@beta.fr" });
+
+      const profil = await entrepotProfil.parEmail("jean@beta.fr");
+      assert.equal(profil!.prenom, "Jean");
+      assert.equal(profil!.nom, "Dujardin");
+      assert.equal(profil!.telephone, "1234");
+      assert.deepEqual(profil!.organisation, {
+        nom: "DINUM",
+        departement: "33",
+        siret: "12345",
+      });
+      assert.deepEqual(profil!.domainesSpecialite, ["RSSI"]);
     });
   });
 });
