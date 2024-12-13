@@ -22,7 +22,7 @@ export class Profil {
     this.services.push(service);
   }
 
-  estInscritA(service: string): boolean{
-    return this.services?.includes(service) ?? false;
+  estInscritA(service: string): boolean {
+    return this.services.includes(service);
   }
 }
