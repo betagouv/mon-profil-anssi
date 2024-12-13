@@ -1,8 +1,9 @@
 import { AdaptateurHorloge } from "./adaptateurHorloge";
 import { Inscription } from "./inscription";
-import { Organisation } from "./organisation";
+import { Organisation, valideOrganisation } from "./organisation";
+import { ErreurDonneesObligatoiresManquantes } from "./erreurDonneesObligatoiresManquantes";
 
-type DonneesCreationProfil = {
+export type DonneesCreationProfil = {
   email: string;
   nom: string;
   prenom: string;
@@ -11,7 +12,7 @@ type DonneesCreationProfil = {
   telephone?: string;
 };
 
-type DonneesMiseAJourProfil = Omit<Partial<DonneesCreationProfil>, 'email'>;
+type DonneesMiseAJourProfil = Omit<Partial<DonneesCreationProfil>, "email">;
 
 export class Profil {
   email: string;
@@ -22,20 +23,33 @@ export class Profil {
   telephone?: string;
   inscriptions: Inscription[] = [];
 
-  constructor({
-    email,
-    nom,
-    prenom,
-    organisation,
-    domainesSpecialite,
-    telephone,
-  }: DonneesCreationProfil) {
+  constructor(donneesCreationProfil: DonneesCreationProfil) {
+    this.valide(donneesCreationProfil);
+    const { email, nom, prenom, organisation, domainesSpecialite, telephone } =
+      donneesCreationProfil;
     this.email = email;
     this.nom = nom;
     this.prenom = prenom;
     this.organisation = organisation;
     this.domainesSpecialite = domainesSpecialite;
     this.telephone = telephone;
+  }
+
+  private valide({
+    email,
+    nom,
+    prenom,
+    organisation,
+    domainesSpecialite,
+  }: DonneesCreationProfil) {
+    if (!email) throw new ErreurDonneesObligatoiresManquantes("email");
+    if (!prenom) throw new ErreurDonneesObligatoiresManquantes("prenom");
+    if (!nom) throw new ErreurDonneesObligatoiresManquantes("nom");
+    if (!domainesSpecialite || domainesSpecialite.length === 0)
+      throw new ErreurDonneesObligatoiresManquantes("domainesSpecialite");
+    if (!organisation)
+      throw new ErreurDonneesObligatoiresManquantes("organisation");
+    valideOrganisation(organisation);
   }
 
   inscrisAuService(service: string, adaptateurHorloge: AdaptateurHorloge) {

@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { ConfigurationServeur } from "./configurationServeur";
 import { Profil } from "../metier/profil";
+import { ErreurDonneesObligatoiresManquantes } from "../metier/erreurDonneesObligatoiresManquantes";
 
 const ressourceInscription = ({
   entrepotProfil,
@@ -38,14 +39,22 @@ const ressourceInscription = ({
       }
 
       if (!profil) {
-        profil = new Profil({
-          email,
-          nom,
-          prenom,
-          organisation,
-          domainesSpecialite,
-          telephone,
-        });
+        try {
+          profil = new Profil({
+            email,
+            nom,
+            prenom,
+            organisation,
+            domainesSpecialite,
+            telephone,
+          });
+        } catch (e) {
+          if (e instanceof ErreurDonneesObligatoiresManquantes) {
+            reponse.status(400).send({ erreur: e.message });
+            return;
+          }
+          throw e;
+        }
         profil.inscrisAuService(serviceClient, adaptateurHorloge);
         await entrepotProfil.ajoute(profil);
       } else {

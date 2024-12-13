@@ -73,9 +73,9 @@ describe("Sur demande du profil", function () {
     const jeanInferieurDujardin = {
       email: "jean&lt;Dujardin",
       nom: "Jean Dujardin",
-      prenom: "",
+      prenom: " d",
       organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
-      domainesSpecialite: [],
+      domainesSpecialite: ["RSSI"],
     };
     await entrepotProfil.ajoute(new Profil(jeanInferieurDujardin));
 
