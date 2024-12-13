@@ -1,5 +1,5 @@
 import { Profil } from "../metier/profil";
-import knex from "knex";
+import knex, { Knex } from "knex";
 import { EntrepotProfil } from "../metier/entrepotProfil";
 import { knexConfig } from "./knexfile";
 import { Inscription } from "../metier/inscription";
@@ -12,6 +12,18 @@ const connexion = () => {
     throw new Error("Configuration invalide : NODE_ENV non renseigné.");
   return knex(knexConfig[nodeEnv as NodeEnv]);
 };
+
+async function metsAJourInscriptions(db: Knex<any, unknown[]>, profil: Profil) {
+  await db("inscriptions").where("email", profil.email).delete();
+  await db("inscriptions").insert(
+    profil.inscriptions.map((inscription) => ({
+      email: profil.email,
+      service: inscription.service,
+      date_inscription: inscription.date,
+    })),
+  );
+}
+
 export const entrepotProfilPostgres: EntrepotProfil = {
   async metsAJour(profil: Profil): Promise<void> {
     const db = connexion();
@@ -27,14 +39,7 @@ export const entrepotProfilPostgres: EntrepotProfil = {
         organisation,
         domaines_specialite: JSON.stringify(domainesSpecialite),
       });
-    await db("inscriptions").where("email", profil.email).delete();
-    await db("inscriptions").insert(
-      profil.inscriptions.map((inscription) => ({
-        email: profil.email,
-        service: inscription.service,
-        date_inscription: inscription.date,
-      })),
-    );
+    await metsAJourInscriptions(db, profil);
   },
 
   async ajoute(profil: Profil): Promise<void> {
@@ -49,13 +54,7 @@ export const entrepotProfilPostgres: EntrepotProfil = {
       organisation,
       domaines_specialite: JSON.stringify(domainesSpecialite),
     });
-    await db("inscriptions").insert(
-      profil.inscriptions.map((inscription) => ({
-        email: profil.email,
-        service: inscription.service,
-        date_inscription: inscription.date,
-      })),
-    );
+    await metsAJourInscriptions(db, profil);
   },
 
   async parEmail(email: string): Promise<Profil | undefined> {
