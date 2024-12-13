@@ -50,46 +50,58 @@ describe("Sur demande d'inscription", () => {
     assert.equal(profil!.estInscritA("mss"), true);
   });
 
-  it("met à jour les services d'un utilisateur déjà inscrit", async () => {
-    const profilInscrit = new Profil({
-      email: "jean@beta.fr",
-      nom: "Dujardin",
-      prenom: "Jean",
-    });
-    profilInscrit.inscrisAuService("mss");
-    await entrepotProfil.ajoute(profilInscrit);
-
-    await request(serveur).post("/inscription").set("x-id-client", "mac").send({
-      email: "jean@beta.fr",
-      prenom: "Jean",
-      nom: "Dujardin",
-    });
-
-    const profil = await entrepotProfil.parEmail("jean@beta.fr");
-    assert.equal(profil!.estInscritA("mss"), true);
-    assert.equal(profil!.estInscritA("mac"), true);
-  });
-
-  it("ne permets pas la réinscription à un service", async () => {
-    const profilInscrit = new Profil({
-      email: "jean@beta.fr",
-      nom: "Dujardin",
-      prenom: "Jean",
-    });
-    profilInscrit.inscrisAuService("mss");
-    await entrepotProfil.ajoute(profilInscrit);
-
-    const reponse = await request(serveur)
-      .post("/inscription")
-      .set("x-id-client", "mss")
-      .send({
+  describe("pour un utilisateur déjà inscrit", () => {
+    beforeEach(async () => {
+      const profilInscrit = new Profil({
         email: "jean@beta.fr",
-        prenom: "Jean",
         nom: "Dujardin",
+        prenom: "Jean",
       });
+      profilInscrit.inscrisAuService("mss");
+      await entrepotProfil.ajoute(profilInscrit);
+    });
 
-    const profil = await entrepotProfil.parEmail("jean@beta.fr");
-    assert.equal(profil!.nombreInscriptions(), 1);
-    assert.equal(reponse.status, 200);
+    it("ne l'ajoute pas une seconde fois à l'entrepôt", async () => {
+      await request(serveur)
+        .post("/inscription")
+        .set("x-id-client", "mac")
+        .send({
+          email: "jean@beta.fr",
+          prenom: "Jean",
+          nom: "Dujardin",
+        });
+
+      assert.equal(entrepotProfil.nombre(), 1);
+    });
+
+    it("met à jour ses services", async () => {
+      await request(serveur)
+        .post("/inscription")
+        .set("x-id-client", "mac")
+        .send({
+          email: "jean@beta.fr",
+          prenom: "Jean",
+          nom: "Dujardin",
+        });
+
+      const profil = await entrepotProfil.parEmail("jean@beta.fr");
+      assert.equal(profil!.estInscritA("mss"), true);
+      assert.equal(profil!.estInscritA("mac"), true);
+    });
+
+    it("accepte la réinscription à un service", async () => {
+      const reponse = await request(serveur)
+        .post("/inscription")
+        .set("x-id-client", "mss")
+        .send({
+          email: "jean@beta.fr",
+          prenom: "Jean",
+          nom: "Dujardin",
+        });
+
+      const profil = await entrepotProfil.parEmail("jean@beta.fr");
+      assert.equal(profil!.nombreInscriptions(), 1);
+      assert.equal(reponse.status, 200);
+    });
   });
 });

@@ -11,4 +11,8 @@ export class EntrepotProfilMemoire implements EntrepotProfil {
   async ajoute(profil: Profil) {
     this.items.push(profil);
   }
+
+  nombre() {
+    return this.items.length;
+  }
 }
