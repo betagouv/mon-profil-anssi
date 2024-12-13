@@ -1,1 +1,5 @@
-export interface Organisation {}
+export interface Organisation {
+  nom: string;
+  siret: string;
+  departement: string;
+}

@@ -80,7 +80,7 @@ describe("Sur demande du profil", function () {
       email: "jean&lt;Dujardin",
       nom: "Jean Dujardin",
       prenom: "",
-      organisation: {},
+      organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
       domainesSpecialite: [],
     };
     await entrepotProfil.ajoute(new Profil(jeanInferieurDujardin));

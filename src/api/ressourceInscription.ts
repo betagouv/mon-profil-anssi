@@ -11,9 +11,23 @@ const ressourceInscription = ({
 
   routeur.post(
     "/",
-    middleware.aseptise("email", "nom", "prenom"),
+    middleware.aseptise(
+      "email",
+      "nom",
+      "prenom",
+      "telephone",
+      "domainesSpecialite",
+      "organisation.*",
+    ),
     async (requete: Request, reponse: Response) => {
-      const { email, nom, prenom } = requete.body;
+      const {
+        email,
+        nom,
+        prenom,
+        telephone,
+        domainesSpecialite,
+        organisation,
+      } = requete.body;
       const serviceClient = requete.header("x-id-client") as string;
 
       let profil = await entrepotProfil.parEmail(email);
@@ -27,8 +41,9 @@ const ressourceInscription = ({
           email,
           nom,
           prenom,
-          organisation: {},
-          domainesSpecialite: [],
+          organisation,
+          domainesSpecialite,
+          telephone,
         });
         profil.inscrisAuService(serviceClient, adaptateurHorloge);
         await entrepotProfil.ajoute(profil);
