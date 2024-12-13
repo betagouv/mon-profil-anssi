@@ -5,7 +5,7 @@ import { creeServeur } from "../../src/api/mpa";
 import { Express } from "express";
 import { EntrepotProfilMemoire } from "../persistance/entrepotProfil.memoire";
 import { fabriqueMiddleware } from "../../src/api/middleware";
-import {Profil} from "../../src/metier/profil";
+import { Profil } from "../../src/metier/profil";
 
 describe("Sur demande du profil", function () {
   let serveur: Express;
