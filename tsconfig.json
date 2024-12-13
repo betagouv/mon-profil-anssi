@@ -9,5 +9,5 @@
     "noImplicitAny": true,
     "outDir": "dist",
     "allowJs": false
-  },
+  }
 }
