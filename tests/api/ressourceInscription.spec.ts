@@ -193,7 +193,7 @@ describe("Sur demande d'inscription", () => {
       assert.deepEqual(profil!.domainesSpecialite, ["JURI"]);
     });
 
-    it("n'ecrase avec des informations non fournies", async () => {
+    it("n'écrase pas le profil avec des informations non fournies", async () => {
       await request(serveur)
         .post("/inscription")
         .set("x-id-client", "mac")
@@ -208,6 +208,42 @@ describe("Sur demande d'inscription", () => {
         departement: "33",
         siret: "12345",
       });
+      assert.deepEqual(profil!.domainesSpecialite, ["RSSI"]);
+    });
+
+    it("refuse une organisation vide", async () => {
+      const reponse = await request(serveur)
+        .post("/inscription")
+        .set("x-id-client", "mac")
+        .send({ email: "jean@beta.fr", organisation: {} });
+
+      assert.equal(reponse.badRequest, true);
+      assert.equal(
+        reponse.body.erreur,
+        "Le champ [organisation.nom] est obligatoire",
+      );
+
+      const profil = await entrepotProfil.parEmail("jean@beta.fr");
+      assert.deepEqual(profil!.organisation, {
+        nom: "DINUM",
+        departement: "33",
+        siret: "12345",
+      });
+    });
+
+    it("refuse de ne pas avoir de domaine de spécialité", async () => {
+      const reponse = await request(serveur)
+        .post("/inscription")
+        .set("x-id-client", "mac")
+        .send({ email: "jean@beta.fr", domainesSpecialite: [] });
+
+      assert.equal(reponse.badRequest, true);
+      assert.equal(
+        reponse.body.erreur,
+        "Le champ [domainesSpecialite] est obligatoire",
+      );
+
+      const profil = await entrepotProfil.parEmail("jean@beta.fr");
       assert.deepEqual(profil!.domainesSpecialite, ["RSSI"]);
     });
   });
