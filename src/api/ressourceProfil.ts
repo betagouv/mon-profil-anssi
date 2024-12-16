@@ -46,20 +46,13 @@ const ressourceProfil = ({
         reponse.sendStatus(404);
         return;
       }
-      if (prenom) profil.prenom = prenom;
-      if (nom) profil.nom = nom;
-      if (telephone) profil.telephone = telephone;
-      if (
-        organisation &&
-        organisation.nom &&
-        organisation.siret &&
-        organisation.departement
-      ) {
-        profil.organisation = organisation;
-      }
-      if (domainesSpecialite && domainesSpecialite.length !== 0) {
-        profil.domainesSpecialite = domainesSpecialite;
-      }
+      profil.metsAJour({
+        nom,
+        prenom,
+        telephone,
+        organisation,
+        domainesSpecialite,
+      });
       await entrepotProfil.metsAJour(profil);
       reponse.sendStatus(200);
     },

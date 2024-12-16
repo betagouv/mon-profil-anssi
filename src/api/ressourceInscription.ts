@@ -17,7 +17,7 @@ const ressourceInscription = ({
       "nom",
       "prenom",
       "telephone",
-      "domainesSpecialite",
+      "domainesSpecialite.*",
       "organisation.*",
       "x-id-client",
     ),
@@ -59,22 +59,13 @@ const ressourceInscription = ({
         await entrepotProfil.ajoute(profil);
       } else {
         profil.inscrisAuService(serviceClient, adaptateurHorloge);
-
-        try {
-          profil.metsAJour({
-            prenom,
-            nom,
-            telephone,
-            domainesSpecialite,
-            organisation,
-          });
-        } catch (e) {
-          if (e instanceof ErreurDonneesObligatoiresManquantes) {
-            reponse.status(400).send({ erreur: e.message });
-            return;
-          }
-          throw e;
-        }
+        profil.metsAJour({
+          prenom,
+          nom,
+          telephone,
+          domainesSpecialite,
+          organisation,
+        });
         await entrepotProfil.metsAJour(profil);
       }
       reponse.sendStatus(201);
