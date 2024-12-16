@@ -84,14 +84,15 @@ export class Profil {
     if (prenom) this.prenom = prenom;
     if (nom) this.nom = nom;
     if (telephone) this.telephone = telephone;
-    if (organisation) {
-      valideOrganisation(organisation);
+    if (
+      organisation &&
+      organisation.nom &&
+      organisation.siret &&
+      organisation.departement
+    ) {
       this.organisation = organisation;
     }
-    if (domainesSpecialite) {
-      if (domainesSpecialite.length === 0) {
-        throw new ErreurDonneesObligatoiresManquantes("domainesSpecialite");
-      }
+    if (domainesSpecialite && domainesSpecialite.length !== 0) {
       this.domainesSpecialite = domainesSpecialite;
     }
   }
