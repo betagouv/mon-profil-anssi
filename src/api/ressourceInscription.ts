@@ -59,13 +59,22 @@ const ressourceInscription = ({
         await entrepotProfil.ajoute(profil);
       } else {
         profil.inscrisAuService(serviceClient, adaptateurHorloge);
-        profil.metsAJour({
-          prenom,
-          nom,
-          telephone,
-          domainesSpecialite,
-          organisation,
-        });
+
+        try {
+          profil.metsAJour({
+            prenom,
+            nom,
+            telephone,
+            domainesSpecialite,
+            organisation,
+          });
+        } catch (e) {
+          if (e instanceof ErreurDonneesObligatoiresManquantes) {
+            reponse.status(400).send({ erreur: e.message });
+            return;
+          }
+          throw e;
+        }
         await entrepotProfil.metsAJour(profil);
       }
       reponse.sendStatus(201);

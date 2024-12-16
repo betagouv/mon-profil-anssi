@@ -84,7 +84,15 @@ export class Profil {
     if (prenom) this.prenom = prenom;
     if (nom) this.nom = nom;
     if (telephone) this.telephone = telephone;
-    if (organisation) this.organisation = organisation;
-    if (domainesSpecialite) this.domainesSpecialite = domainesSpecialite;
+    if (organisation) {
+      valideOrganisation(organisation);
+      this.organisation = organisation;
+    }
+    if (domainesSpecialite) {
+      if (domainesSpecialite.length === 0) {
+        throw new ErreurDonneesObligatoiresManquantes("domainesSpecialite");
+      }
+      this.domainesSpecialite = domainesSpecialite;
+    }
   }
 }
