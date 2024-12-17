@@ -32,7 +32,9 @@ describe("Sur demande d'inscription", () => {
     };
     serveur = creeServeur({
       entrepotProfil,
-      middleware: fabriqueMiddleware(),
+      middleware: fabriqueMiddleware({
+        adaptateurJWT: { decode: () => ({ service: "MSS" }) },
+      }),
       adaptateurHorloge,
     });
   });
