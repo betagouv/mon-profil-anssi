@@ -31,6 +31,7 @@ services:
       - NODE_ENV=development
     networks:
       - mpa-network
+      - lab-network
     ports:
       - "${PORT_MPA}:3001"
     depends_on:
@@ -38,6 +39,8 @@ services:
 
 networks:
   mpa-network:
+    external: true
+  lab-network:
     external: true
 
 volumes:
