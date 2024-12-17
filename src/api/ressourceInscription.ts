@@ -12,6 +12,7 @@ const ressourceInscription = ({
 
   routeur.post(
     "/",
+    middleware.decodeJeton(),
     middleware.aseptise(
       "email",
       "nom",
@@ -19,7 +20,6 @@ const ressourceInscription = ({
       "telephone",
       "domainesSpecialite.*",
       "organisation.*",
-      "x-id-client",
     ),
     async (requete: Request, reponse: Response) => {
       const {
@@ -30,7 +30,7 @@ const ressourceInscription = ({
         domainesSpecialite,
         organisation,
       } = requete.body;
-      const serviceClient = requete.header("x-id-client") as string;
+      const serviceClient = (requete as Request & { service: string }).service;
 
       let profil = await entrepotProfil.parEmail(email);
       if (profil && profil.estInscritA(serviceClient)) {
