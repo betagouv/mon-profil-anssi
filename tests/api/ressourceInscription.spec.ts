@@ -43,6 +43,7 @@ describe("Sur demande d'inscription", () => {
   it("ajoute le profil", async () => {
     const reponse = await request(serveur)
       .post("/inscription")
+      .set("Authorization", "Bearer mss-JWT")
       .send(jeanDujardin);
 
     const profil = await entrepotProfil.parEmail("jean@beta.fr");
@@ -53,6 +54,7 @@ describe("Sur demande d'inscription", () => {
   it("aseptise les paramètres", async () => {
     await request(serveur)
       .post("/inscription")
+      .set("Authorization", "Bearer mss-JWT")
       .send({
         email: "  jean@beta.fr",
         prenom: ">Jean",
@@ -80,20 +82,10 @@ describe("Sur demande d'inscription", () => {
     assert.equal(profil!.organisation.departement, "&gt;33");
   });
 
-  it("aseptise le header x-id-client", async () => {
-    await request(serveur)
-      .post("/inscription")
-      .set("x-id-client", "<mss")
-      .send(jeanDujardin);
-
-    const profil = await entrepotProfil.parEmail("jean@beta.fr");
-    assert.equal(profil!.estInscritA("&lt;mss"), true);
-  });
-
   it("jette une erreur 400 en cas d'erreur de validation", async () => {
     const reponse = await request(serveur)
       .post("/inscription")
-      .set("x-id-client", "mss")
+      .set("Authorization", "Bearer mss-JWT")
       .send({});
 
     assert.equal(reponse.badRequest, true);
@@ -103,7 +95,7 @@ describe("Sur demande d'inscription", () => {
   it("inscrit l'utilisateur au service", async () => {
     await request(serveur)
       .post("/inscription")
-      .set("x-id-client", "mss")
+      .set("Authorization", "Bearer mss-JWT")
       .send(jeanDujardin);
 
     const profil = await entrepotProfil.parEmail("jean@beta.fr");
@@ -144,7 +136,7 @@ describe("Sur demande d'inscription", () => {
     it("met à jour ses services", async () => {
       await request(serveur)
         .post("/inscription")
-        .set("x-id-client", "mac")
+        .set("Authorization", "Bearer mac-JWT")
         .send({
           email: "jean@beta.fr",
           prenom: "Jean",
@@ -159,7 +151,7 @@ describe("Sur demande d'inscription", () => {
     it("accepte la réinscription à un service", async () => {
       const reponse = await request(serveur)
         .post("/inscription")
-        .set("x-id-client", "mss")
+        .set("Authorization", "Bearer mss-JWT")
         .send({
           email: "jean@beta.fr",
           prenom: "Jean",
@@ -174,7 +166,7 @@ describe("Sur demande d'inscription", () => {
     it("mets à jour le profil avec de nouvelles informations", async () => {
       await request(serveur)
         .post("/inscription")
-        .set("x-id-client", "mac")
+        .set("Authorization", "Bearer mac-JWT")
         .send({
           email: "jean@beta.fr",
           prenom: "Jeanne",
@@ -199,7 +191,7 @@ describe("Sur demande d'inscription", () => {
     it("n'écrase pas le profil avec des informations non fournies", async () => {
       await request(serveur)
         .post("/inscription")
-        .set("x-id-client", "mac")
+        .set("Authorization", "Bearer mac-JWT")
         .send({ email: "jean@beta.fr" });
 
       const profil = await entrepotProfil.parEmail("jean@beta.fr");
@@ -217,7 +209,7 @@ describe("Sur demande d'inscription", () => {
     it("n'écrase pas le profil avec des informations vides", async () => {
       let reponse = await request(serveur)
         .post("/inscription")
-        .set("x-id-client", "mac")
+        .set("Authorization", "Bearer mac-JWT")
         .send({
           email: "jean@beta.fr",
           organisation: {},
