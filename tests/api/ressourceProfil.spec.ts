@@ -29,7 +29,9 @@ describe("La ressource profil", () => {
     entrepotProfil.ajoute(new Profil(jeanDujardin));
     serveur = creeServeur({
       entrepotProfil,
-      middleware: fabriqueMiddleware(),
+      middleware: fabriqueMiddleware({
+        adaptateurJWT: { decode: () => ({ service: "MSS" }) },
+      }),
       adaptateurHorloge: adaptateurHorloge,
     });
   });

@@ -5,14 +5,16 @@ import assert from "assert";
 import { createRequest, createResponse } from "node-mocks-http";
 
 describe("Le middleware", () => {
-  let requete: Request;
+  let requete: Request & { service?: string };
   let reponse: Response;
   let middleware: Middleware;
 
   beforeEach(() => {
     requete = createRequest();
     reponse = createResponse();
-    middleware = fabriqueMiddleware();
+    middleware = fabriqueMiddleware({
+      adaptateurJWT: { decode: () => ({ service: "MSS" }) },
+    });
   });
 
   describe("sur demande d'aseptisation", () => {
@@ -64,6 +66,85 @@ describe("Le middleware", () => {
         paramRenseigne,
         "&lt;script&gt;alert(&quot;hacked!&quot;);&lt;&#x2F;script&gt;",
       );
+    });
+  });
+  describe("sur demande de décodage du jeton", () => {
+    it("délègue à l'adaptateur JWT le décodage du jeton", async () => {
+      let suiteEstAppele = false;
+      const suite = () => {
+        suiteEstAppele = true;
+      };
+      const jeton = "unService-JWT";
+      const adaptateurJWT = {
+        decode: (jeton: string) => ({ service: jeton.split("-")[0] }),
+      };
+      middleware = fabriqueMiddleware({ adaptateurJWT });
+      requete.headers["authorization"] = `Bearer ${jeton}`;
+
+      await middleware.decodeJeton()(requete, reponse, suite);
+
+      assert.equal(requete.service, "unService");
+      assert.equal(suiteEstAppele, true);
+    });
+
+    it("reste robuste sans jeton d'authentification", async () => {
+      let suiteEstAppele = false;
+      const suite = () => {
+        suiteEstAppele = true;
+      };
+
+      await middleware.decodeJeton()(requete, reponse, suite);
+
+      assert.equal(reponse.statusCode, 401);
+      assert.equal(suiteEstAppele, false);
+    });
+
+    it("jette une erreur 401 si le décode n'a pas donné de résultat", async () => {
+      let suiteEstAppele = false;
+      const suite = () => {
+        suiteEstAppele = true;
+      };
+      const adaptateurJWT = {
+        decode: (jeton: string) => undefined,
+      };
+      middleware = fabriqueMiddleware({ adaptateurJWT });
+      requete.headers["authorization"] = `Bearer pasbon`;
+
+      await middleware.decodeJeton()(requete, reponse, suite);
+
+      assert.equal(reponse.statusCode, 401);
+      assert.equal(suiteEstAppele, false);
+    });
+
+    it("jette une erreur 401 si le décode a lancé une erreur", async () => {
+      let suiteEstAppele = false;
+      const suite = () => {
+        suiteEstAppele = true;
+      };
+      const adaptateurJWT = {
+        decode: (jeton: string) => {
+          throw new Error("jeton invalide");
+        },
+      };
+      middleware = fabriqueMiddleware({ adaptateurJWT });
+      requete.headers["authorization"] = `Bearer pasbon`;
+
+      await middleware.decodeJeton()(requete, reponse, suite);
+
+      assert.equal(reponse.statusCode, 401);
+      assert.equal(suiteEstAppele, false);
+    });
+
+    it("appelle la suite de la chaine de middleware", async () => {
+      let suiteEstAppele = false;
+      const suite = () => {
+        suiteEstAppele = true;
+      };
+      requete.headers["authorization"] = `Bearer jeton`;
+
+      await middleware.decodeJeton()(requete, reponse, suite);
+
+      assert.equal(suiteEstAppele, true);
     });
   });
 });
