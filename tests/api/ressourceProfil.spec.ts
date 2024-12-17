@@ -7,6 +7,7 @@ import { EntrepotProfilMemoire } from "../persistance/entrepotProfil.memoire";
 import { fabriqueMiddleware } from "../../src/api/middleware";
 import { Profil } from "../../src/metier/profil";
 import { adaptateurHorloge } from "../../src/metier/adaptateurHorloge";
+import { fauxAdaptateurJWT } from "./fauxAdaptateurJWT";
 
 describe("La ressource profil", () => {
   let serveur: Express;
@@ -30,9 +31,9 @@ describe("La ressource profil", () => {
     serveur = creeServeur({
       entrepotProfil,
       middleware: fabriqueMiddleware({
-        adaptateurJWT: { decode: () => ({ service: "MSS" }) },
+        adaptateurJWT: fauxAdaptateurJWT,
       }),
-      adaptateurHorloge: adaptateurHorloge,
+      adaptateurHorloge,
     });
   });
 

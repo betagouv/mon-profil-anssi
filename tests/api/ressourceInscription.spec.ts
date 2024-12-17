@@ -7,6 +7,7 @@ import request from "supertest";
 import assert from "assert";
 import { Profil } from "../../src/metier/profil";
 import { adaptateurHorloge } from "../../src/metier/adaptateurHorloge";
+import { fauxAdaptateurJWT } from "./fauxAdaptateurJWT";
 
 describe("Sur demande d'inscription", () => {
   const jeanDujardin = {
@@ -33,7 +34,7 @@ describe("Sur demande d'inscription", () => {
     serveur = creeServeur({
       entrepotProfil,
       middleware: fabriqueMiddleware({
-        adaptateurJWT: { decode: () => ({ service: "MSS" }) },
+        adaptateurJWT: fauxAdaptateurJWT,
       }),
       adaptateurHorloge,
     });
