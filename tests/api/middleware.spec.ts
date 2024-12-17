@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { fabriqueMiddleware, Middleware } from "../../src/api/middleware";
 import assert from "assert";
 import { createRequest, createResponse } from "node-mocks-http";
+import { fauxAdaptateurJWT } from "./fauxAdaptateurJWT";
 
 describe("Le middleware", () => {
   let requete: Request & { service?: string };
@@ -13,7 +14,7 @@ describe("Le middleware", () => {
     requete = createRequest();
     reponse = createResponse();
     middleware = fabriqueMiddleware({
-      adaptateurJWT: { decode: () => ({ service: "MSS" }) },
+      adaptateurJWT: fauxAdaptateurJWT,
     });
   });
 
@@ -105,7 +106,7 @@ describe("Le middleware", () => {
         suiteEstAppele = true;
       };
       const adaptateurJWT = {
-        decode: (jeton: string) => undefined,
+        decode: (_: string) => undefined,
       };
       middleware = fabriqueMiddleware({ adaptateurJWT });
       requete.headers["authorization"] = `Bearer pasbon`;
@@ -122,7 +123,7 @@ describe("Le middleware", () => {
         suiteEstAppele = true;
       };
       const adaptateurJWT = {
-        decode: (jeton: string) => {
+        decode: (_: string) => {
           throw new Error("jeton invalide");
         },
       };
