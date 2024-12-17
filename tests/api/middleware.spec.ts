@@ -78,6 +78,7 @@ describe("Le middleware", () => {
       const jeton = "unService-JWT";
       const adaptateurJWT = {
         decode: (jeton: string) => ({ service: jeton.split("-")[0] }),
+        signeDonnees:()=>("")
       };
       middleware = fabriqueMiddleware({ adaptateurJWT });
       requete.headers["authorization"] = `Bearer ${jeton}`;
@@ -107,6 +108,7 @@ describe("Le middleware", () => {
       };
       const adaptateurJWT = {
         decode: (_: string) => undefined,
+        signeDonnees:()=>("")
       };
       middleware = fabriqueMiddleware({ adaptateurJWT });
       requete.headers["authorization"] = `Bearer pasbon`;
@@ -126,6 +128,7 @@ describe("Le middleware", () => {
         decode: (_: string) => {
           throw new Error("jeton invalide");
         },
+        signeDonnees:()=>("")
       };
       middleware = fabriqueMiddleware({ adaptateurJWT });
       requete.headers["authorization"] = `Bearer pasbon`;
