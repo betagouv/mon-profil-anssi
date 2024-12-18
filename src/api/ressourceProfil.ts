@@ -38,6 +38,7 @@ const ressourceProfil = ({
       "domainesSpecialite.*",
       "telephone",
     ),
+    middleware.decodeJeton(),
     async (requete, reponse) => {
       const { email } = requete.params;
       const { nom, prenom, telephone, organisation, domainesSpecialite } =
