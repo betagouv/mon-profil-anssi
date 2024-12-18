@@ -1,10 +1,12 @@
 import { Request, Response, Router } from "express";
 import { ConfigurationServeur } from "./configurationServeur";
 import { versProfilAPI } from "./profilAPI";
+import { Profil } from "../metier/profil";
 
 const ressourceProfil = ({
   entrepotProfil,
   middleware,
+  adaptateurHorloge,
 }: ConfigurationServeur) => {
   const routeur = Router();
 
@@ -39,13 +41,25 @@ const ressourceProfil = ({
       "telephone",
     ),
     middleware.decodeJeton(),
-    async (requete, reponse) => {
+    async (requete: Request, reponse) => {
       const { email } = requete.params;
       const { nom, prenom, telephone, organisation, domainesSpecialite } =
         requete.body;
       let profil = await entrepotProfil.parEmail(email);
       if (!profil) {
-        reponse.sendStatus(404);
+        profil = new Profil({
+          nom,
+          prenom,
+          telephone,
+          organisation,
+          domainesSpecialite,
+          email,
+        });
+        const serviceClient = (requete as Request & { service: string })
+          .service;
+        profil.inscrisAuService(serviceClient, adaptateurHorloge);
+        await entrepotProfil.ajoute(profil);
+        reponse.sendStatus(201);
         return;
       }
       profil.metsAJour({
