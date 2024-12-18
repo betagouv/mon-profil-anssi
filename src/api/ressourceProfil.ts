@@ -11,6 +11,7 @@ const ressourceProfil = ({
   routeur.get(
     "/:email",
     middleware.aseptise("email"),
+    middleware.decodeJeton(),
     async (requete: Request, reponse: Response) => {
       const { email } = requete.params;
       if (!email) {

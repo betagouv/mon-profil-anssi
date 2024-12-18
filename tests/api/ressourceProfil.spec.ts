@@ -38,18 +38,20 @@ describe("La ressource profil", () => {
   });
 
   describe("Sur demande du profil", () => {
-    it("répond 200", async () => {
-      const reponse = await request(serveur)
-        .get("/profil/jean@beta.fr")
+    const requeteGETAuthentifiee = (url: string) =>
+      request(serveur)
+        .get(url)
+        .auth("mss-JWT", { type: "bearer" })
         .set("Accept", "application/json");
+
+    it("répond 200", async () => {
+      const reponse = await requeteGETAuthentifiee("/profil/jean@beta.fr");
 
       assert.equal(reponse.status, 200);
     });
 
     it("renvoie les données du profil", async () => {
-      const reponse = await request(serveur)
-        .get("/profil/jean@beta.fr")
-        .set("Accept", "application/json");
+      const reponse = await requeteGETAuthentifiee("/profil/jean@beta.fr");
 
       assert.deepEqual(reponse.body, {
         email: "jean@beta.fr",
@@ -66,9 +68,7 @@ describe("La ressource profil", () => {
     });
 
     it("répond 404 lorsque le profil est inconnu", async () => {
-      const reponse = await request(serveur)
-        .get("/profil/inconnu@beta.fr")
-        .set("Accept", "application/json");
+      const reponse = await requeteGETAuthentifiee("/profil/inconnu@beta.fr");
 
       assert.equal(reponse.status, 404);
     });
@@ -83,10 +83,18 @@ describe("La ressource profil", () => {
       };
       await entrepotProfil.ajoute(new Profil(jeanInferieurDujardin));
 
-      const reponse = await request(serveur).get("/profil/jean<Dujardin");
+      const reponse = await requeteGETAuthentifiee("/profil/jean<Dujardin");
 
       assert.equal(reponse.status, 200);
       assert.equal(reponse.body.nom, "Jean Dujardin");
+    });
+
+    it("renvoie une erreur 401 si le jeton est invalide", async () => {
+      const reponse = await request(serveur)
+        .get("/profil/jean@beta.fr")
+        .set("Accept", "application/json");
+
+      assert.equal(reponse.status, 401);
     });
   });
 
