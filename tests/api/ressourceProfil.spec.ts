@@ -6,7 +6,6 @@ import { Express } from "express";
 import { EntrepotProfilMemoire } from "../persistance/entrepotProfil.memoire";
 import { fabriqueMiddleware } from "../../src/api/middleware";
 import { Profil } from "../../src/metier/profil";
-import { adaptateurHorloge } from "../../src/metier/adaptateurHorloge";
 import { fauxAdaptateurJWT } from "./fauxAdaptateurJWT";
 
 describe("La ressource profil", () => {
@@ -112,17 +111,19 @@ describe("La ressource profil", () => {
     });
 
     it("mets à jour le profil connu", async () => {
-      const reponse = await requetePUTAuthentifiee("/profil/jean@beta.fr").send({
-        nom: "Dujardin2",
-        prenom: "Jean2",
-        organisation: {
-          nom: "DINUM2",
-          siret: "123456782",
-          departement: "332",
+      const reponse = await requetePUTAuthentifiee("/profil/jean@beta.fr").send(
+        {
+          nom: "Dujardin2",
+          prenom: "Jean2",
+          organisation: {
+            nom: "DINUM2",
+            siret: "123456782",
+            departement: "332",
+          },
+          domainesSpecialite: ["RSSI2", "JURI2"],
+          telephone: "06070809102",
         },
-        domainesSpecialite: ["RSSI2", "JURI2"],
-        telephone: "06070809102",
-      });
+      );
 
       assert.equal(reponse.status, 200);
       let profilAJour = await entrepotProfil.parEmail("jean@beta.fr");
@@ -135,9 +136,11 @@ describe("La ressource profil", () => {
       assert.equal(profilAJour!.telephone, "06070809102");
     });
 
-    it("inscris automatiquement le profil s'il est inconnu", async () => {
-      const reponse = await requetePUTAuthentifiee("/profil/inconnu@beta.fr").send(
-        {
+    describe("si le profil est inconnu", () => {
+      it("inscris automatiquement le profil", async () => {
+        const reponse = await requetePUTAuthentifiee(
+          "/profil/inconnu@beta.fr",
+        ).send({
           email: "jean@beta.fr",
           nom: "Dujardin",
           prenom: "Jean",
@@ -148,24 +151,36 @@ describe("La ressource profil", () => {
           },
           domainesSpecialite: ["RSSI"],
           telephone: "0607080910",
-        },
-      );
+        });
 
-      assert.equal(reponse.status, 201);
-      let profilAjoute = await entrepotProfil.parEmail("inconnu@beta.fr");
-      assert.notEqual(profilAjoute, undefined);
-      assert.equal(profilAjoute!.nom, "Dujardin");
-      assert.equal(profilAjoute!.prenom, "Jean");
-      assert.equal(profilAjoute!.organisation.nom, "DINUM");
-      assert.equal(profilAjoute!.organisation.siret, "12345678");
-      assert.equal(profilAjoute!.organisation.departement, "33");
-      assert.deepEqual(profilAjoute!.domainesSpecialite, ["RSSI"]);
-      assert.equal(profilAjoute!.telephone, "0607080910");
-      assert.equal(profilAjoute?.estInscritA("mss"), true);
-      assert.deepStrictEqual(
-        profilAjoute!.dateDInscriptionA("mss"),
-        new Date("2024-12-17"),
-      );
+        assert.equal(reponse.status, 201);
+        let profilAjoute = await entrepotProfil.parEmail("inconnu@beta.fr");
+        assert.notEqual(profilAjoute, undefined);
+        assert.equal(profilAjoute!.nom, "Dujardin");
+        assert.equal(profilAjoute!.prenom, "Jean");
+        assert.equal(profilAjoute!.organisation.nom, "DINUM");
+        assert.equal(profilAjoute!.organisation.siret, "12345678");
+        assert.equal(profilAjoute!.organisation.departement, "33");
+        assert.deepEqual(profilAjoute!.domainesSpecialite, ["RSSI"]);
+        assert.equal(profilAjoute!.telephone, "0607080910");
+        assert.equal(profilAjoute?.estInscritA("mss"), true);
+        assert.deepStrictEqual(
+          profilAjoute!.dateDInscriptionA("mss"),
+          new Date("2024-12-17"),
+        );
+      });
+
+      it("renvoie une erreur 400 lorsque les informations pour le créer sont incomplètes", async () => {
+        const reponse = await requetePUTAuthentifiee(
+          "/profil/inconnu@beta.fr",
+        ).send({
+          email: "jean@beta.fr",
+          nom: "Dujardin",
+        });
+
+        assert.equal(reponse.badRequest, true);
+        assert.equal(reponse.body.erreur, "Le champ [prenom] est obligatoire");
+      });
     });
 
     it("aseptise les paramètres", async () => {
@@ -183,7 +198,9 @@ describe("La ressource profil", () => {
       };
       await entrepotProfil.ajoute(new Profil(jeanSup));
 
-      const reponse = await requetePUTAuthentifiee("/profil/>jean@beta.fr").send({
+      const reponse = await requetePUTAuthentifiee(
+        "/profil/>jean@beta.fr",
+      ).send({
         nom: "Dujardin>",
         prenom: "Jean>",
         organisation: {
@@ -210,13 +227,15 @@ describe("La ressource profil", () => {
     });
 
     it("ignore les informations vides", async () => {
-      const reponse = await requetePUTAuthentifiee("/profil/jean@beta.fr").send({
-        organisation: {},
-        nom: "",
-        domainesSpecialite: [],
-        prenom: "",
-        telephone: "",
-      });
+      const reponse = await requetePUTAuthentifiee("/profil/jean@beta.fr").send(
+        {
+          organisation: {},
+          nom: "",
+          domainesSpecialite: [],
+          prenom: "",
+          telephone: "",
+        },
+      );
 
       assert.equal(reponse.status, 200);
       let profilAJour = await entrepotProfil.parEmail("jean@beta.fr");
