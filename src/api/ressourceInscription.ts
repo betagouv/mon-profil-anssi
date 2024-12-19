@@ -1,7 +1,7 @@
-import { Router, Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { ConfigurationServeur } from "./configurationServeur";
-import { Profil } from "../metier/profil";
 import { ErreurDonneesObligatoiresManquantes } from "../metier/erreurDonneesObligatoiresManquantes";
+import { fabriqueServiceInscription } from "../metier/serviceInscription";
 
 const ressourceInscription = ({
   entrepotProfil,
@@ -9,6 +9,10 @@ const ressourceInscription = ({
   adaptateurHorloge,
 }: ConfigurationServeur) => {
   const routeur = Router();
+  const serviceInscription = fabriqueServiceInscription({
+    adaptateurHorloge,
+    entrepotProfil,
+  });
 
   routeur.post(
     "/",
@@ -40,14 +44,17 @@ const ressourceInscription = ({
 
       if (!profil) {
         try {
-          profil = new Profil({
-            email,
-            nom,
-            prenom,
-            organisation,
-            domainesSpecialite,
-            telephone,
-          });
+          await serviceInscription.nouveauProfil(
+            {
+              email,
+              nom,
+              prenom,
+              organisation,
+              domainesSpecialite,
+              telephone,
+            },
+            serviceClient,
+          );
         } catch (e) {
           if (e instanceof ErreurDonneesObligatoiresManquantes) {
             reponse.status(400).send({ erreur: e.message });
@@ -55,8 +62,6 @@ const ressourceInscription = ({
           }
           throw e;
         }
-        profil.inscrisAuService(serviceClient, adaptateurHorloge);
-        await entrepotProfil.ajoute(profil);
       } else {
         profil.inscrisAuService(serviceClient, adaptateurHorloge);
         profil.metsAJour({

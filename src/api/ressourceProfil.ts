@@ -1,7 +1,8 @@
 import { Request, Response, Router } from "express";
 import { ConfigurationServeur } from "./configurationServeur";
 import { versProfilAPI } from "./profilAPI";
-import { Profil } from "../metier/profil";
+import { ErreurDonneesObligatoiresManquantes } from "../metier/erreurDonneesObligatoiresManquantes";
+import { fabriqueServiceInscription } from "../metier/serviceInscription";
 
 const ressourceProfil = ({
   entrepotProfil,
@@ -9,6 +10,10 @@ const ressourceProfil = ({
   adaptateurHorloge,
 }: ConfigurationServeur) => {
   const routeur = Router();
+  const serviceInscription = fabriqueServiceInscription({
+    adaptateurHorloge,
+    entrepotProfil,
+  });
 
   routeur.get(
     "/:email",
@@ -47,18 +52,27 @@ const ressourceProfil = ({
         requete.body;
       let profil = await entrepotProfil.parEmail(email);
       if (!profil) {
-        profil = new Profil({
-          nom,
-          prenom,
-          telephone,
-          organisation,
-          domainesSpecialite,
-          email,
-        });
-        const serviceClient = (requete as Request & { service: string })
-          .service;
-        profil.inscrisAuService(serviceClient, adaptateurHorloge);
-        await entrepotProfil.ajoute(profil);
+        try {
+          const serviceClient = (requete as Request & { service: string })
+            .service;
+          await serviceInscription.nouveauProfil(
+            {
+              email,
+              nom,
+              prenom,
+              organisation,
+              domainesSpecialite,
+              telephone,
+            },
+            serviceClient,
+          );
+        } catch (e) {
+          if (e instanceof ErreurDonneesObligatoiresManquantes) {
+            reponse.status(400).send({ erreur: e.message });
+            return;
+          }
+          throw e;
+        }
         reponse.sendStatus(201);
         return;
       }
