@@ -4,6 +4,7 @@ const secret = process.env.SECRET_JWT;
 
 export type ContenuJeton = JwtPayload & {
   service: string;
+  iat: number;
 };
 
 export interface AdaptateurJWT {
