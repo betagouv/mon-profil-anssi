@@ -8,6 +8,7 @@ import assert from "assert";
 import { Profil } from "../../src/metier/profil";
 import { adaptateurHorloge } from "../../src/metier/adaptateurHorloge";
 import { fauxAdaptateurJWT } from "./fauxAdaptateurJWT";
+import { fauxServiceRevocationJeton } from "./fauxServiceRevocationJeton";
 
 describe("Sur demande d'inscription", () => {
   const jeanDujardin = {
@@ -35,7 +36,7 @@ describe("Sur demande d'inscription", () => {
       entrepotProfil,
       middleware: fabriqueMiddleware({
         adaptateurJWT: fauxAdaptateurJWT,
-        serviceRevocationJeton: { estRevoque: async () => false },
+        serviceRevocationJeton: fauxServiceRevocationJeton,
       }),
       adaptateurHorloge,
     });
