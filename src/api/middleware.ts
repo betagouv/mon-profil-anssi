@@ -1,6 +1,7 @@
 import { check } from "express-validator";
-import { Request, Response, NextFunction } from "express";
-import { AdaptateurJWT, ContenuJeton } from "./adaptateurJWT";
+import { NextFunction, Request, Response } from "express";
+import { AdaptateurJWT } from "./adaptateurJWT";
+import { ServiceRevocationJeton } from "./serviceRevocationJeton";
 
 type FonctionMiddleware = (
   requete: Request,
@@ -12,10 +13,6 @@ export type Middleware = {
   aseptise: (...nomsParametres: string[]) => FonctionMiddleware;
   decodeJeton: () => FonctionMiddleware;
 };
-
-export interface ServiceRevocationJeton {
-  estRevoque: (jeton: ContenuJeton) => Promise<boolean>;
-}
 
 export const fabriqueMiddleware = ({
   adaptateurJWT,
