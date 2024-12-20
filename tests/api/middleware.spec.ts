@@ -3,18 +3,23 @@ import { Request, Response } from "express";
 import { fabriqueMiddleware, Middleware } from "../../src/api/middleware";
 import assert from "assert";
 import { createRequest, createResponse } from "node-mocks-http";
-import { fauxAdaptateurJWT } from "./fauxAdaptateurJWT";
+import { AdaptateurJWT } from "../../src/api/adaptateurJWT";
 
 describe("Le middleware", () => {
   let requete: Request & { service?: string };
   let reponse: Response;
   let middleware: Middleware;
+  let adaptateurJWT: AdaptateurJWT;
 
   beforeEach(() => {
     requete = createRequest();
     reponse = createResponse();
+    adaptateurJWT = {
+      decode: () => ({ service: "mss" }),
+      signeDonnees: () => "",
+    };
     middleware = fabriqueMiddleware({
-      adaptateurJWT: fauxAdaptateurJWT,
+      adaptateurJWT,
     });
   });
 
@@ -76,11 +81,9 @@ describe("Le middleware", () => {
         suiteEstAppele = true;
       };
       const jeton = "unService-JWT";
-      const adaptateurJWT = {
-        decode: (jeton: string) => ({ service: jeton.split("-")[0] }),
-        signeDonnees:()=>("")
-      };
-      middleware = fabriqueMiddleware({ adaptateurJWT });
+      adaptateurJWT.decode = (jeton: string) => ({
+        service: jeton.split("-")[0],
+      });
       requete.headers["authorization"] = `Bearer ${jeton}`;
 
       await middleware.decodeJeton()(requete, reponse, suite);
@@ -94,6 +97,9 @@ describe("Le middleware", () => {
       const suite = () => {
         suiteEstAppele = true;
       };
+      adaptateurJWT.decode = (jeton: string) => ({
+        service: jeton.split("-")[0],
+      });
 
       await middleware.decodeJeton()(requete, reponse, suite);
 
@@ -106,11 +112,7 @@ describe("Le middleware", () => {
       const suite = () => {
         suiteEstAppele = true;
       };
-      const adaptateurJWT = {
-        decode: (_: string) => undefined,
-        signeDonnees:()=>("")
-      };
-      middleware = fabriqueMiddleware({ adaptateurJWT });
+      adaptateurJWT.decode = (_: string) => undefined;
       requete.headers["authorization"] = `Bearer pasbon`;
 
       await middleware.decodeJeton()(requete, reponse, suite);
@@ -124,13 +126,9 @@ describe("Le middleware", () => {
       const suite = () => {
         suiteEstAppele = true;
       };
-      const adaptateurJWT = {
-        decode: (_: string) => {
-          throw new Error("jeton invalide");
-        },
-        signeDonnees:()=>("")
+      adaptateurJWT.decode = (_: string) => {
+        throw new Error("jeton invalide");
       };
-      middleware = fabriqueMiddleware({ adaptateurJWT });
       requete.headers["authorization"] = `Bearer pasbon`;
 
       await middleware.decodeJeton()(requete, reponse, suite);
