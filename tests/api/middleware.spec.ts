@@ -17,11 +17,12 @@ describe("Le middleware", () => {
     requete = createRequest();
     reponse = createResponse();
     adaptateurJWT = {
-      decode: () => ({ service: "mss" }),
+      decode: () => ({ service: "mss", iat: 0 }),
       signeDonnees: () => "",
     };
     serviceRevocationJeton = {
       estRevoque: async () => false,
+      revoquePour: async () => {},
     };
     middleware = fabriqueMiddleware({
       adaptateurJWT,
@@ -89,6 +90,7 @@ describe("Le middleware", () => {
       const jeton = "unService-JWT";
       adaptateurJWT.decode = (jeton: string) => ({
         service: jeton.split("-")[0],
+        iat: 0,
       });
       requete.headers["authorization"] = `Bearer ${jeton}`;
 
@@ -105,6 +107,7 @@ describe("Le middleware", () => {
       };
       adaptateurJWT.decode = (jeton: string) => ({
         service: jeton.split("-")[0],
+        iat: 0,
       });
 
       await middleware.decodeJeton()(requete, reponse, suite);
@@ -149,7 +152,7 @@ describe("Le middleware", () => {
         suiteEstAppele = true;
       };
       requete.headers["authorization"] = `Bearer revoque`;
-      adaptateurJWT.decode = (_: string) => ({ service: "mss" });
+      adaptateurJWT.decode = (_: string) => ({ service: "mss", iat: 0 });
       serviceRevocationJeton.estRevoque = async (contenuJeton) =>
         contenuJeton.service === "mss";
 
