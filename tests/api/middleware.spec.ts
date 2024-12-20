@@ -1,13 +1,10 @@
 import { beforeEach, describe, it } from "node:test";
 import { Request, Response } from "express";
-import {
-  fabriqueMiddleware,
-  Middleware,
-  ServiceRevocationJeton,
-} from "../../src/api/middleware";
+import { fabriqueMiddleware, Middleware } from "../../src/api/middleware";
 import assert from "assert";
 import { createRequest, createResponse } from "node-mocks-http";
 import { AdaptateurJWT } from "../../src/api/adaptateurJWT";
+import { ServiceRevocationJeton } from "../../src/api/serviceRevocationJeton";
 
 describe("Le middleware", () => {
   let requete: Request & { service?: string };
