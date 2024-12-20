@@ -31,6 +31,7 @@ describe("La ressource profil", () => {
       entrepotProfil,
       middleware: fabriqueMiddleware({
         adaptateurJWT: fauxAdaptateurJWT,
+        serviceRevocationJeton: { estRevoque: async () => false },
       }),
       adaptateurHorloge: { maintenant: () => new Date("2024-12-17") },
     });

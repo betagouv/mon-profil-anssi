@@ -1,6 +1,6 @@
 import { check } from "express-validator";
 import { Request, Response, NextFunction } from "express";
-import { AdaptateurJWT } from "./adaptateurJWT";
+import { AdaptateurJWT, ContenuJeton } from "./adaptateurJWT";
 
 type FonctionMiddleware = (
   requete: Request,
@@ -13,10 +13,16 @@ export type Middleware = {
   decodeJeton: () => FonctionMiddleware;
 };
 
+export interface ServiceRevocationJeton {
+  estRevoque: (jeton: ContenuJeton) => Promise<boolean>;
+}
+
 export const fabriqueMiddleware = ({
   adaptateurJWT,
+  serviceRevocationJeton,
 }: {
   adaptateurJWT: AdaptateurJWT;
+  serviceRevocationJeton: ServiceRevocationJeton;
 }): Middleware => {
   const aseptise =
     (...nomsParametres: string[]) =>
@@ -38,6 +44,11 @@ export const fabriqueMiddleware = ({
     try {
       let contenuJeton = adaptateurJWT.decode(jeton);
       if (!contenuJeton) {
+        reponse.sendStatus(401);
+        return;
+      }
+      const estRevoque = await serviceRevocationJeton.estRevoque(contenuJeton);
+      if (estRevoque) {
         reponse.sendStatus(401);
         return;
       }
