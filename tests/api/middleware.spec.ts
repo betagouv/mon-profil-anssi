@@ -1,6 +1,10 @@
 import { beforeEach, describe, it } from "node:test";
 import { Request, Response } from "express";
-import { fabriqueMiddleware, Middleware } from "../../src/api/middleware";
+import {
+  fabriqueMiddleware,
+  Middleware,
+  ServiceRevocationJeton,
+} from "../../src/api/middleware";
 import assert from "assert";
 import { createRequest, createResponse } from "node-mocks-http";
 import { AdaptateurJWT } from "../../src/api/adaptateurJWT";
@@ -10,6 +14,7 @@ describe("Le middleware", () => {
   let reponse: Response;
   let middleware: Middleware;
   let adaptateurJWT: AdaptateurJWT;
+  let serviceRevocationJeton: ServiceRevocationJeton;
 
   beforeEach(() => {
     requete = createRequest();
@@ -18,8 +23,12 @@ describe("Le middleware", () => {
       decode: () => ({ service: "mss" }),
       signeDonnees: () => "",
     };
+    serviceRevocationJeton = {
+      estRevoque: async () => false,
+    };
     middleware = fabriqueMiddleware({
       adaptateurJWT,
+      serviceRevocationJeton,
     });
   });
 
@@ -130,6 +139,22 @@ describe("Le middleware", () => {
         throw new Error("jeton invalide");
       };
       requete.headers["authorization"] = `Bearer pasbon`;
+
+      await middleware.decodeJeton()(requete, reponse, suite);
+
+      assert.equal(reponse.statusCode, 401);
+      assert.equal(suiteEstAppele, false);
+    });
+
+    it("jette une erreur 401 si le jeton est révoqué", async () => {
+      let suiteEstAppele = false;
+      const suite = () => {
+        suiteEstAppele = true;
+      };
+      requete.headers["authorization"] = `Bearer revoque`;
+      adaptateurJWT.decode = (_: string) => ({ service: "mss" });
+      serviceRevocationJeton.estRevoque = async (contenuJeton) =>
+        contenuJeton.service === "mss";
 
       await middleware.decodeJeton()(requete, reponse, suite);
 

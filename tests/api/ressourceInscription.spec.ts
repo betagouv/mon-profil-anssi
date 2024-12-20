@@ -35,6 +35,7 @@ describe("Sur demande d'inscription", () => {
       entrepotProfil,
       middleware: fabriqueMiddleware({
         adaptateurJWT: fauxAdaptateurJWT,
+        serviceRevocationJeton: { estRevoque: async () => false },
       }),
       adaptateurHorloge,
     });
