@@ -1,14 +1,8 @@
 import { ContenuJeton } from "./adaptateurJWT";
+import { EntrepotRevocationJeton } from "./entrepotRevocationJeton";
 
 export interface ServiceRevocationJeton {
   estRevoque: (jeton: ContenuJeton) => Promise<boolean>;
-}
-
-export type RevocationJeton = { service: string; dateFinRevocation: Date };
-
-export interface EntrepotRevocationJeton {
-  ajoute(revocationJeton: RevocationJeton): Promise<void>;
-  pourService(service: string): Promise<RevocationJeton | undefined>;
 }
 
 export const fabriqueServiceRevocationJeton = ({
