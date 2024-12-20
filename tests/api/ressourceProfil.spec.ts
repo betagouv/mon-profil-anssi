@@ -7,6 +7,7 @@ import { EntrepotProfilMemoire } from "../persistance/entrepotProfil.memoire";
 import { fabriqueMiddleware } from "../../src/api/middleware";
 import { Profil } from "../../src/metier/profil";
 import { fauxAdaptateurJWT } from "./fauxAdaptateurJWT";
+import { fauxServiceRevocationJeton } from "./fauxServiceRevocationJeton";
 
 describe("La ressource profil", () => {
   let serveur: Express;
@@ -31,7 +32,7 @@ describe("La ressource profil", () => {
       entrepotProfil,
       middleware: fabriqueMiddleware({
         adaptateurJWT: fauxAdaptateurJWT,
-        serviceRevocationJeton: { estRevoque: async () => false },
+        serviceRevocationJeton: fauxServiceRevocationJeton,
       }),
       adaptateurHorloge: { maintenant: () => new Date("2024-12-17") },
     });
