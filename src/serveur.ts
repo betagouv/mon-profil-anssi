@@ -14,6 +14,7 @@ creeServeur({
     adaptateurJWT,
     serviceRevocationJeton: fabriqueServiceRevocationJeton({
       entrepotRevocationJeton: entrepotRevocationJetonPostgres,
+      adaptateurHorloge,
     }),
   }),
   adaptateurHorloge,

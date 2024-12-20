@@ -5,6 +5,6 @@ export const fauxAdaptateurJWT: AdaptateurJWT = {
     return donnees + "-JWT";
   },
   decode(jeton: string): ContenuJeton | undefined {
-    return { service: jeton.split("-")[0] };
+    return { service: jeton.split("-")[0], iat: 0 };
   },
 };

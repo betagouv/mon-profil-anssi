@@ -8,16 +8,18 @@ import assert from "assert";
 import { EntrepotRevocationJeton } from "../../src/api/entrepotRevocationJeton";
 
 describe("Le service de révocation de jeton", () => {
-  describe("sur demande si un jeton est révoqué", () => {
-    let serviceRevocationJeton: ServiceRevocationJeton;
-    let entrepotRevocationJeton: EntrepotRevocationJeton;
-    beforeEach(() => {
-      entrepotRevocationJeton = new EntrepotRevocationJetonMemoire();
-      serviceRevocationJeton = fabriqueServiceRevocationJeton({
-        entrepotRevocationJeton,
-      });
+  let serviceRevocationJeton: ServiceRevocationJeton;
+  let entrepotRevocationJeton: EntrepotRevocationJeton;
+  beforeEach(() => {
+    entrepotRevocationJeton = new EntrepotRevocationJetonMemoire();
+    serviceRevocationJeton = fabriqueServiceRevocationJeton({
+      entrepotRevocationJeton,
+      adaptateurHorloge: {
+        maintenant: () => new Date("2024-12-20"),
+      },
     });
-
+  });
+  describe("sur demande si un jeton est révoqué", () => {
     it("répond oui si la date de fin de révocation est postérieure pour ce service", async () => {
       await entrepotRevocationJeton.ajoute({
         service: "mss",
@@ -58,6 +60,15 @@ describe("Le service de révocation de jeton", () => {
       });
 
       assert.equal(estRevoque, false);
+    });
+  });
+  describe("sur demande de révocation d'un jeton", () => {
+    it("délègue à l'entrepôt de sauvegarder la révocation", async () => {
+      await serviceRevocationJeton.revoquePour("mss");
+
+      let revocation = await entrepotRevocationJeton.pourService("mss");
+      assert.equal(revocation?.service, "mss");
+      assert.deepEqual(revocation?.dateFinRevocation, new Date("2024-12-20"));
     });
   });
 });
