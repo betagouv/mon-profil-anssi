@@ -1,7 +1,5 @@
-import {
-  EntrepotRevocationJeton,
-  RevocationJeton,
-} from "../../src/api/serviceRevocationJeton";
+import { EntrepotRevocationJeton } from "../../src/api/entrepotRevocationJeton";
+import { RevocationJeton } from "../../src/api/revocationJeton";
 
 export class EntrepotRevocationJetonMemoire implements EntrepotRevocationJeton {
   items: RevocationJeton[] = [];

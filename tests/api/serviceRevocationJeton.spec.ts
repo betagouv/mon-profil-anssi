@@ -1,11 +1,11 @@
 import { beforeEach, describe, it } from "node:test";
 import { EntrepotRevocationJetonMemoire } from "../persistance/entrepotRevocationJetonMemoire";
 import {
-  EntrepotRevocationJeton,
   fabriqueServiceRevocationJeton,
   ServiceRevocationJeton,
 } from "../../src/api/serviceRevocationJeton";
 import assert from "assert";
+import { EntrepotRevocationJeton } from "../../src/api/entrepotRevocationJeton";
 
 describe("Le service de révocation de jeton", () => {
   describe("sur demande si un jeton est révoqué", () => {
