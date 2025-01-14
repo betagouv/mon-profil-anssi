@@ -19,11 +19,7 @@ describe("La ressource profil", () => {
       email: "jean@beta.fr",
       nom: "Dujardin",
       prenom: "Jean",
-      organisation: {
-        nom: "DINUM",
-        siret: "12345678",
-        departement: "33",
-      },
+      organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
       domainesSpecialite: ["RSSI", "JURI"],
       telephone: "0607080910",
     };
@@ -58,11 +54,7 @@ describe("La ressource profil", () => {
         email: "jean@beta.fr",
         nom: "Dujardin",
         prenom: "Jean",
-        organisation: {
-          nom: "DINUM",
-          siret: "12345678",
-          departement: "33",
-        },
+        organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
         domainesSpecialite: ["RSSI", "JURI"],
         telephone: "0607080910",
       });
@@ -169,11 +161,7 @@ describe("La ressource profil", () => {
           email: "jean@beta.fr",
           nom: "Dujardin",
           prenom: "Jean",
-          organisation: {
-            nom: "DINUM",
-            siret: "12345678",
-            departement: "33",
-          },
+          organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
           domainesSpecialite: ["RSSI"],
           telephone: "0607080910",
         });
@@ -213,11 +201,7 @@ describe("La ressource profil", () => {
         email: "&gt;jean@beta.fr",
         nom: "Dujardin",
         prenom: "Jean",
-        organisation: {
-          nom: "DINUM",
-          siret: "12345678",
-          departement: "33",
-        },
+        organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
         domainesSpecialite: ["RSSI", "JURI"],
         telephone: "0607080910",
       };
@@ -228,11 +212,7 @@ describe("La ressource profil", () => {
       ).send({
         nom: "Dujardin>",
         prenom: "Jean>",
-        organisation: {
-          nom: "DINUM>",
-          siret: "12345678>",
-          departement: "33>",
-        },
+        organisation: { nom: "DINUM>", siret: "12345678>", departement: "33>" },
         domainesSpecialite: ["RSSI>", "JURI>"],
         telephone: "0607080910>",
       });
