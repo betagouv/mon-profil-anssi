@@ -138,6 +138,29 @@ describe("La ressource profil", () => {
       assert.equal(profilAJour!.telephone, "06070809102");
     });
 
+    it("inscris le profil connu au service si ce n'était pas le cas", async () => {
+      await request(serveur)
+        .put("/profil/jean@beta.fr")
+        .auth("autre_service-JWT", { type: "bearer" })
+        .set("Accept", "application/json")
+        .send({});
+
+      const utiliseAutreService = await entrepotProfil.parEmail("jean@beta.fr");
+      assert.equal(utiliseAutreService?.estInscritA("autre_service"), true);
+    });
+
+    it("ne réinscris un profil connu au même service", async () => {
+      const huitDecembre = new Date("2024-12-08");
+      const jeanAvant = await entrepotProfil.parEmail("jean@beta.fr");
+      jeanAvant?.inscrisAuService("mss", { maintenant: () => huitDecembre });
+      await entrepotProfil.metsAJour(jeanAvant!);
+
+      await requetePUTAuthentifiee("/profil/jean@beta.fr").send({});
+
+      const jeanApres = await entrepotProfil.parEmail("jean@beta.fr");
+      assert.equal(jeanApres?.nombreInscriptions(), 1);
+    });
+
     describe("si le profil est inconnu", () => {
       it("inscris automatiquement le profil", async () => {
         const reponse = await requetePUTAuthentifiee(

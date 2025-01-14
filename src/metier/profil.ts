@@ -53,6 +53,9 @@ export class Profil {
   }
 
   inscrisAuService(service: string, adaptateurHorloge: AdaptateurHorloge) {
+    const dejaInscrit =  this.estInscritA(service)
+    if (dejaInscrit) return;
+
     this.inscriptions.push(
       new Inscription(service, adaptateurHorloge.maintenant()),
     );
