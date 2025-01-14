@@ -51,10 +51,10 @@ const ressourceProfil = ({
       const { nom, prenom, telephone, organisation, domainesSpecialite } =
         requete.body;
       let profil = await entrepotProfil.parEmail(email);
+      const serviceClient = (requete as Request & { service: string }).service;
+
       if (!profil) {
         try {
-          const serviceClient = (requete as Request & { service: string })
-            .service;
           await serviceInscription.nouveauProfil(
             {
               email,
@@ -76,6 +76,8 @@ const ressourceProfil = ({
         reponse.sendStatus(201);
         return;
       }
+
+      profil.inscrisAuService(serviceClient, adaptateurHorloge);
       profil.metsAJour({
         nom,
         prenom,
@@ -83,6 +85,7 @@ const ressourceProfil = ({
         organisation,
         domainesSpecialite,
       });
+
       await entrepotProfil.metsAJour(profil);
       reponse.sendStatus(200);
     },
