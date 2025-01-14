@@ -2,10 +2,13 @@ import express from "express";
 import { ressourceProfil } from "./ressourceProfil";
 import { ConfigurationServeur } from "./configurationServeur";
 import redoc from "redoc-express";
+import rateLimit from "express-rate-limit";
 
 const creeServeur = (configurationServeur: ConfigurationServeur) => {
   const app = express();
 
+  const centParMinute = rateLimit({ windowMs: 60 * 1000, limit: 100 });
+  app.use(centParMinute);
   app.use(express.json());
 
   app.use("/profil", ressourceProfil(configurationServeur));
