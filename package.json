@@ -8,7 +8,7 @@
     "test": "node --import tsx --test ./tests/**/*.spec.ts",
     "start": "node --require dotenv/config dist/src/serveur.js",
     "dev": "nodemon src/serveur.ts",
-    "genere-documentation": "node --import tsx ./src/api/swagger.ts"
+    "genere-documentation": "mkdir -p dist/public & node --import tsx ./src/api/swagger.ts"
   },
   "repository": {
     "type": "git",
