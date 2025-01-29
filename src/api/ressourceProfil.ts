@@ -69,6 +69,7 @@ const ressourceProfil = ({
     async (requete: Request, reponse) => {
       // #swagger.tags = ['Profil']
       // #swagger.summary = "Crée ou mets à jour le profil avec les informations"
+      // #swagger.description = "<ul><li><b>Si le profil existe</b>, il est mis à jour avec les informations fournies. Les données non fournies sont laissées intactes.</li><li><b>Si le profil n’existe pas</b>, les données sont toutes obligatoires, sauf le téléphone.</li></ul>"
       /* #swagger.parameters['email'] = {
               in: 'query',
               description: 'Adresse e-mail de l\'utilisateur',
