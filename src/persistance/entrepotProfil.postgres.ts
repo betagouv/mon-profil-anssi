@@ -4,7 +4,7 @@ import { EntrepotProfil } from "../metier/entrepotProfil";
 import { knexConfig } from "./knexfile";
 import { Inscription } from "../metier/inscription";
 import { AdaptateurHachage } from "./adaptateurHachage";
-import { AdaptateurChiffrement } from "./adaptateurChiffrement";
+import { AdaptateurChiffrement, ObjetChiffre } from "./adaptateurChiffrement";
 import { ProfilDb } from "./profilDb";
 
 type NodeEnv = "development" | "production";
@@ -16,22 +16,6 @@ const connexion = () => {
   return knex(knexConfig[nodeEnv as NodeEnv]);
 };
 
-async function metsAJourInscriptions(
-  db: Knex<any, unknown[]>,
-  profil: Profil,
-  emailHash: string,
-) {
-  await db("inscriptions").where("email_hash", emailHash).delete();
-  await db("inscriptions").insert(
-    profil.inscriptions.map((inscription) => ({
-      email: profil.email,
-      email_hash: emailHash,
-      service: inscription.service,
-      date_inscription: inscription.date,
-    })),
-  );
-}
-
 export const entrepotProfilPostgres = ({
   adaptateurChiffrement,
   adaptateurHachage,
@@ -42,6 +26,25 @@ export const entrepotProfilPostgres = ({
   const hashEmail = (email: string) => {
     return adaptateurHachage.hacheSha256(email);
   };
+
+  async function metsAJourInscriptions(
+    db: Knex<any, unknown[]>,
+    profil: Profil,
+    emailHash: string,
+  ) {
+    const donnees = await adaptateurChiffrement.chiffre({
+      email: profil.email,
+    });
+    await db("inscriptions").where("email_hash", emailHash).delete();
+    await db("inscriptions").insert(
+      profil.inscriptions.map((inscription) => ({
+        donnees,
+        email_hash: emailHash,
+        service: inscription.service,
+        date_inscription: inscription.date,
+      })),
+    );
+  }
 
   return {
     async metsAJour(profil: Profil): Promise<void> {
