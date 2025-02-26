@@ -7,11 +7,15 @@ import { fabriqueServiceRevocationJeton } from "./api/serviceRevocationJeton";
 import { entrepotRevocationJetonPostgres } from "./persistance/entrepotRevocationJeton.postgres";
 import { fabriqueAdaptateurHachage } from "./persistance/adaptateurHachage";
 import { adaptateurEnvironnement } from "./adaptateurEnvironnement";
+import { fabriqueAdaptateurChiffrement } from "./persistance/adaptateurChiffrement";
 
 const port = process.env.PORT || 3001;
 
 creeServeur({
   entrepotProfil: fabriqueEntrepotProfilPostgres({
+    adaptateurChiffrement: fabriqueAdaptateurChiffrement({
+      adaptateurEnvironnement,
+    }),
     adaptateurHachage: fabriqueAdaptateurHachage({ adaptateurEnvironnement }),
   }),
   middleware: fabriqueMiddleware({
