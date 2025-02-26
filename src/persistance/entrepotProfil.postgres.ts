@@ -14,11 +14,16 @@ const connexion = () => {
   return knex(knexConfig[nodeEnv as NodeEnv]);
 };
 
-async function metsAJourInscriptions(db: Knex<any, unknown[]>, profil: Profil) {
-  await db("inscriptions").where("email", profil.email).delete();
+async function metsAJourInscriptions(
+  db: Knex<any, unknown[]>,
+  profil: Profil,
+  emailHash: string,
+) {
+  await db("inscriptions").where("email_hash", emailHash).delete();
   await db("inscriptions").insert(
     profil.inscriptions.map((inscription) => ({
       email: profil.email,
+      email_hash: emailHash,
       service: inscription.service,
       date_inscription: inscription.date,
     })),
@@ -57,7 +62,7 @@ export const entrepotProfilPostgres = ({
           domaines_specialite: JSON.stringify(domainesSpecialite),
           email_hash: emailHash,
         });
-      await metsAJourInscriptions(db, profil);
+      await metsAJourInscriptions(db, profil, emailHash);
     },
 
     async ajoute(profil: Profil): Promise<void> {
@@ -80,7 +85,7 @@ export const entrepotProfilPostgres = ({
         domaines_specialite: JSON.stringify(domainesSpecialite),
         email_hash: emailHash,
       });
-      await metsAJourInscriptions(db, profil);
+      await metsAJourInscriptions(db, profil, emailHash);
     },
 
     async parEmail(email: string): Promise<Profil | undefined> {
@@ -99,7 +104,7 @@ export const entrepotProfilPostgres = ({
         donneesProfil;
       const profil = new Profil({ domainesSpecialite, ...autresDonnees });
       const donneesInscriptions = await db("inscriptions")
-        .where("email", profil.email)
+        .where("email_hash", emailHash)
         .select();
       profil.inscriptions = donneesInscriptions.map(
         (donnees) => new Inscription(donnees.service, donnees.date_inscription),
