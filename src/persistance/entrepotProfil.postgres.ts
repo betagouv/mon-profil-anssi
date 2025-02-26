@@ -3,6 +3,9 @@ import knex, { Knex } from "knex";
 import { EntrepotProfil } from "../metier/entrepotProfil";
 import { knexConfig } from "./knexfile";
 import { Inscription } from "../metier/inscription";
+import { AdaptateurHachage } from "./adaptateurHachage";
+import { AdaptateurChiffrement, ObjetChiffre } from "./adaptateurChiffrement";
+import { ProfilDb } from "./profilDb";
 
 type NodeEnv = "development" | "production";
 
@@ -13,65 +16,119 @@ const connexion = () => {
   return knex(knexConfig[nodeEnv as NodeEnv]);
 };
 
-async function metsAJourInscriptions(db: Knex<any, unknown[]>, profil: Profil) {
-  await db("inscriptions").where("email", profil.email).delete();
+async function metsAJourInscriptions(
+  db: Knex<any, unknown[]>,
+  inscriptions: Inscription[],
+  emailHash: string,
+  donnees: ObjetChiffre,
+) {
+  await db("inscriptions").where("email_hash", emailHash).delete();
   await db("inscriptions").insert(
-    profil.inscriptions.map((inscription) => ({
-      email: profil.email,
+    inscriptions.map((inscription) => ({
+      donnees,
+      email_hash: emailHash,
       service: inscription.service,
       date_inscription: inscription.date,
     })),
   );
 }
 
-export const entrepotProfilPostgres: EntrepotProfil = {
-  async metsAJour(profil: Profil): Promise<void> {
-    const db = connexion();
-    const { email, prenom, nom, telephone, organisation, domainesSpecialite } =
-      profil;
-    await db("profils")
-      .where("email", profil.email)
-      .update({
+export const entrepotProfilPostgres = ({
+  adaptateurChiffrement,
+  adaptateurHachage,
+}: {
+  adaptateurChiffrement: AdaptateurChiffrement;
+  adaptateurHachage: AdaptateurHachage;
+}): EntrepotProfil => {
+  const hashEmail = (email: string) => {
+    return adaptateurHachage.hacheSha256(email);
+  };
+
+  return {
+    async metsAJour(profil: Profil): Promise<void> {
+      const db = connexion();
+      const {
         email,
         prenom,
         nom,
         telephone,
         organisation,
-        domaines_specialite: JSON.stringify(domainesSpecialite),
+        domainesSpecialite,
+      } = profil;
+      const emailHash = hashEmail(email);
+      const donnees = await adaptateurChiffrement.chiffre({
+        email,
+        prenom,
+        nom,
+        telephone,
+        organisation,
+        domaines_specialite: domainesSpecialite,
       });
-    await metsAJourInscriptions(db, profil);
-  },
+      await db("profils").where({ email_hash: emailHash }).update({
+        email_hash: emailHash,
+        donnees,
+      });
+      await metsAJourInscriptions(db, profil.inscriptions, emailHash, donnees);
+    },
 
-  async ajoute(profil: Profil): Promise<void> {
-    const db = connexion();
-    const { email, prenom, nom, telephone, domainesSpecialite, organisation } =
-      profil;
-    await db("profils").insert({
-      email,
-      prenom,
-      nom,
-      telephone,
-      organisation,
-      domaines_specialite: JSON.stringify(domainesSpecialite),
-    });
-    await metsAJourInscriptions(db, profil);
-  },
+    async ajoute(profil: Profil): Promise<void> {
+      const db = connexion();
+      const {
+        email,
+        prenom,
+        nom,
+        telephone,
+        domainesSpecialite,
+        organisation,
+      } = profil;
+      const emailHash = hashEmail(email);
+      const donnees = await adaptateurChiffrement.chiffre({
+        email,
+        prenom,
+        nom,
+        telephone,
+        organisation,
+        domaines_specialite: domainesSpecialite,
+      });
+      await db("profils").insert({
+        email_hash: emailHash,
+        donnees,
+      });
+      await metsAJourInscriptions(db, profil.inscriptions, emailHash, donnees);
+    },
 
-  async parEmail(email: string): Promise<Profil | undefined> {
-    const db = connexion();
-    const donneesProfil = await db("profils").where({ email }).first().select();
+    async parEmail(email: string): Promise<Profil | undefined> {
+      const db = connexion();
+      const emailHash = hashEmail(email);
+      const donneesProfilChiffrees = await db("profils")
+        .where({ email_hash: emailHash })
+        .first()
+        .select();
 
-    if (!donneesProfil) return undefined;
+      if (!donneesProfilChiffrees) return undefined;
 
-    const { domaines_specialite: domainesSpecialite, ...autresDonnees } =
-      donneesProfil;
-    const profil = new Profil({ domainesSpecialite, ...autresDonnees });
-    const donneesInscriptions = await db("inscriptions")
-      .where("email", profil.email)
-      .select();
-    profil.inscriptions = donneesInscriptions.map(
-      (donnees) => new Inscription(donnees.service, donnees.date_inscription),
-    );
-    return profil;
-  },
+      const donneesProfil = await adaptateurChiffrement.dechiffre<ProfilDb>(
+        donneesProfilChiffrees.donnees,
+      );
+
+      const { domaines_specialite: domainesSpecialite, ...autresDonnees } =
+        donneesProfil;
+      const profil = new Profil({ domainesSpecialite, ...autresDonnees });
+      const donneesInscriptions = await db("inscriptions")
+        .where("email_hash", emailHash)
+        .select();
+      profil.inscriptions = donneesInscriptions.map(
+        (donnees) => new Inscription(donnees.service, donnees.date_inscription),
+      );
+      return profil;
+    },
+  };
 };
+
+export const fabriqueEntrepotProfilPostgres = ({
+  adaptateurChiffrement,
+  adaptateurHachage,
+}: {
+  adaptateurChiffrement: AdaptateurChiffrement;
+  adaptateurHachage: AdaptateurHachage;
+}) => entrepotProfilPostgres({ adaptateurChiffrement, adaptateurHachage });
