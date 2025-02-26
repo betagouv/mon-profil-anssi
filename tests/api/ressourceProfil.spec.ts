@@ -9,11 +9,19 @@ import { Profil } from "../../src/metier/profil";
 import { fauxAdaptateurJWT } from "./fauxAdaptateurJWT";
 import { fauxServiceRevocationJeton } from "./fauxServiceRevocationJeton";
 import { fabriqueAdaptateurHachage } from "../../src/persistance/adaptateurHachage";
+import { AdaptateurEnvironnement } from "../../src/adaptateurEnvironnement";
 
 describe("La ressource profil", () => {
   let serveur: Express;
   let entrepotProfil: EntrepotProfilMemoire;
-  const adaptateurEnvironnement = {
+  const adaptateurEnvironnement: AdaptateurEnvironnement = {
+    chiffrement: () => ({
+      cleChaCha20Hex: () =>
+        Buffer.from(
+          "634d926d56f195346a23bba72128814c7b1d5a62403d080487657be6a30ad9e2",
+          "hex",
+        ),
+    }),
     hashage: () => ({
       sel: () => "uneSelPourLesTests",
     }),
