@@ -4,7 +4,7 @@ import { EntrepotProfil } from "../metier/entrepotProfil";
 import { knexConfig } from "./knexfile";
 import { Inscription } from "../metier/inscription";
 import { AdaptateurHachage } from "./adaptateurHachage";
-import { AdaptateurChiffrement } from "./adaptateurChiffrement";
+import { AdaptateurChiffrement, ObjetChiffre } from "./adaptateurChiffrement";
 import { ProfilDb } from "./profilDb";
 
 type NodeEnv = "development" | "production";
@@ -18,13 +18,14 @@ const connexion = () => {
 
 async function metsAJourInscriptions(
   db: Knex<any, unknown[]>,
-  profil: Profil,
+  inscriptions: Inscription[],
   emailHash: string,
+  donnees: ObjetChiffre,
 ) {
   await db("inscriptions").where("email_hash", emailHash).delete();
   await db("inscriptions").insert(
-    profil.inscriptions.map((inscription) => ({
-      email: profil.email,
+    inscriptions.map((inscription) => ({
+      donnees,
       email_hash: emailHash,
       service: inscription.service,
       date_inscription: inscription.date,
@@ -67,7 +68,7 @@ export const entrepotProfilPostgres = ({
         email_hash: emailHash,
         donnees,
       });
-      await metsAJourInscriptions(db, profil, emailHash);
+      await metsAJourInscriptions(db, profil.inscriptions, emailHash, donnees);
     },
 
     async ajoute(profil: Profil): Promise<void> {
@@ -93,7 +94,7 @@ export const entrepotProfilPostgres = ({
         email_hash: emailHash,
         donnees,
       });
-      await metsAJourInscriptions(db, profil, emailHash);
+      await metsAJourInscriptions(db, profil.inscriptions, emailHash, donnees);
     },
 
     async parEmail(email: string): Promise<Profil | undefined> {
