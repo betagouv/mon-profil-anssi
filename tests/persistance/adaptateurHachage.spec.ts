@@ -5,6 +5,13 @@ import { adaptateurHachage } from "../../src/persistance/adaptateurHachage";
 describe("L'adaptateur chiffrement", () => {
   it("peut hacher avec un sel", async () => {
     const adaptateurEnvironnement = {
+      chiffrement: () => ({
+        cleChaCha20Hex: () =>
+          Buffer.from(
+            "634d926d56f195346a23bba72128814c7b1d5a62403d080487657be6a30ad9e2",
+            "hex",
+          ),
+      }),
       hashage: () => ({
         sel: () => "monSel",
       }),
