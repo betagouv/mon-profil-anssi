@@ -8,13 +8,22 @@ import { fabriqueMiddleware } from "../../src/api/middleware";
 import { Profil } from "../../src/metier/profil";
 import { fauxAdaptateurJWT } from "./fauxAdaptateurJWT";
 import { fauxServiceRevocationJeton } from "./fauxServiceRevocationJeton";
+import { fabriqueAdaptateurHachage } from "../../src/persistance/adaptateurHachage";
 
 describe("La ressource profil", () => {
   let serveur: Express;
   let entrepotProfil: EntrepotProfilMemoire;
+  const adaptateurEnvironnement = {
+    hashage: () => ({
+      sel: () => "uneSelPourLesTests",
+    }),
+  };
+  const adaptateurHachage = fabriqueAdaptateurHachage({
+    adaptateurEnvironnement,
+  });
 
   beforeEach(() => {
-    entrepotProfil = new EntrepotProfilMemoire();
+    entrepotProfil = new EntrepotProfilMemoire({ adaptateurHachage });
     const jeanDujardin = {
       email: "jean@beta.fr",
       nom: "Dujardin",

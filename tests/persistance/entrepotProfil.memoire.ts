@@ -1,11 +1,17 @@
 import { Profil } from "../../src/metier/profil";
 import { EntrepotProfil } from "../../src/metier/entrepotProfil";
+import { AdaptateurHachage } from "../../src/persistance/adaptateurHachage";
 
 export class EntrepotProfilMemoire implements EntrepotProfil {
-  items: Profil[] = [];
+  items: Record<string, Profil> = {};
+  adaptateurHachage: AdaptateurHachage;
+
+  constructor({ adaptateurHachage }: { adaptateurHachage: AdaptateurHachage }) {
+    this.adaptateurHachage = adaptateurHachage;
+  }
 
   async parEmail(email: string): Promise<Profil | undefined> {
-    const donneesProfil = this.items.find((p) => p.email === email);
+    const donneesProfil = this.items[this.hashEmail(email)];
     if (!donneesProfil) return undefined;
     const profil = new Profil(donneesProfil);
     profil.inscriptions = [...donneesProfil.inscriptions];
@@ -13,17 +19,22 @@ export class EntrepotProfilMemoire implements EntrepotProfil {
   }
 
   async ajoute(profil: Profil) {
-    this.items.push(profil);
+    const emailHash = this.hashEmail(profil.email);
+    this.items[emailHash] = profil;
   }
 
   async metsAJour(profil: Profil): Promise<void> {
-    const profilTrouve = this.items.find((p) => p.email === profil.email);
+    const profilTrouve = this.items[this.hashEmail(profil.email)];
     if (!profilTrouve) return;
 
-    this.items[this.items.indexOf(profilTrouve)] = profil;
+    this.items[this.hashEmail(profil.email)] = profil;
   }
 
   nombre() {
-    return this.items.length;
+    return Object.keys(this.items).length;
+  }
+
+  private hashEmail(email: string) {
+    return this.adaptateurHachage.hacheSha256(email);
   }
 }
