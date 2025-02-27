@@ -5,8 +5,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "test": "node --import tsx --test ./tests/**/*.spec.ts",
-    "test:watch": "node --watch --import tsx --test ./tests/**/*.spec.ts",
+    "test": "node --import tsx --test './tests/**/*.spec.ts'",
+    "test:watch": "node --watch --import tsx --test './tests/**/*.spec.ts'",
     "start": "node --require dotenv/config dist/src/serveur.js",
     "dev": "nodemon src/serveur.ts",
     "genere-documentation": "mkdir -p dist/public & node --import tsx ./src/api/swagger.ts"
