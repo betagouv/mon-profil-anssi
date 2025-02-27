@@ -1,3 +1,3 @@
 #! /bin/sh
 
-npx knex migrate:latest
+npm run knex -- migrate:latest
