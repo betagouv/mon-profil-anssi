@@ -61,3 +61,9 @@ dans le fichier `.env`).
 ### Outils en local
 
 - `Postgres` est relayé sur le port `5433` de l'hôte. Donc le requêtage via un outil graphique est possible.
+
+## Accéder localement à l'instance docker pour éxecuter des commandes Node
+
+```sh
+$ docker exec -it mon-profil-anssi-api node
+```
