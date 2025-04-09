@@ -1,3 +1,3 @@
 #! /bin/sh
 
-npm run knex -- migrate:latest
+npm run prepare:knex-migrate-latest
