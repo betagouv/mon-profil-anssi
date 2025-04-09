@@ -1,13 +1,3 @@
-version: "3"
-
-x-app: &configuration-base
-  build:
-    context: .
-  env_file:
-    - .env
-  volumes:
-    - .:/usr/src/app
-
 services:
   mpa-db:
     image: postgres:14
@@ -21,12 +11,10 @@ services:
       - dbvol:/var/lib/postgresql/data
 
   api:
-    <<: *configuration-base
-
-    command: bash -c "
-      npx knex migrate:latest
-      && npx nodemon src/serveur.ts
-      "
+    build:
+      context: .
+    env_file:
+      - .env
     environment:
       - NODE_ENV=development
     networks:
