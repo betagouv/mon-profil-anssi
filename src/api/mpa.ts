@@ -7,8 +7,8 @@ import rateLimit from "express-rate-limit";
 const creeServeur = (configurationServeur: ConfigurationServeur) => {
   const app = express();
 
-  const centParMinute = rateLimit({ windowMs: 60 * 1000, limit: 100 });
-  app.use(centParMinute);
+  const vingtParSeconde = rateLimit({ windowMs: 1000, limit: 20 });
+  app.use(vingtParSeconde);
   app.use(express.json());
 
   app.use("/profil", ressourceProfil(configurationServeur));
