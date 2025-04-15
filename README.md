@@ -30,7 +30,7 @@ $ docker network create lab-network
 
 Créer un fichier `.env` à partir du fichier `.env.template` et renseigner les diverses variables d'environnement.
 
-Lancer le script `scripts/start.sh`
+Lancer le script `scripts/dev/start.sh`
 
 Se connecter au conteneur de la base de données et créer une nouvelle base `mpa` pour un utilisateur postgres.
 
