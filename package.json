@@ -2,8 +2,6 @@
   "name": "mon-profil-anssi",
   "version": "1.0.0",
   "module": "nodenext",
-  "description": "",
-  "main": "index.ts",
   "scripts": {
     "start:clever-cloud":"node --require dotenv/config dist/src/serveur.js",
     "start:local":"npm run pre-start:knex-migrate-latest && nodemon src/serveur.ts",
