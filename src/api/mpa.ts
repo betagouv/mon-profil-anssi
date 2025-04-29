@@ -3,6 +3,7 @@ import { ressourceProfil } from "./ressourceProfil";
 import { ConfigurationServeur } from "./configurationServeur";
 import redoc from "redoc-express";
 import rateLimit from "express-rate-limit";
+import { ressourceInscriptions } from "./ressourceInscriptions";
 
 const creeServeur = (configurationServeur: ConfigurationServeur) => {
   const app = express();
@@ -12,6 +13,8 @@ const creeServeur = (configurationServeur: ConfigurationServeur) => {
   app.use(express.json());
 
   app.use("/profil", ressourceProfil(configurationServeur));
+
+  app.use("/inscriptions", ressourceInscriptions(configurationServeur));
 
   app.get("/docs/swagger.json", (req, res) => {
     // #swagger.ignore = true

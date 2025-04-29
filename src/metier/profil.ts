@@ -52,8 +52,15 @@ export class Profil {
     valideOrganisation(organisation);
   }
 
+  inscrisAuServiceALaDate(service: string, dateInscription: Date) {
+    const dejaInscrit = this.estInscritA(service);
+    if (dejaInscrit) return;
+
+    this.inscriptions.push(new Inscription(service, dateInscription));
+  }
+
   inscrisAuService(service: string, adaptateurHorloge: AdaptateurHorloge) {
-    const dejaInscrit =  this.estInscritA(service)
+    const dejaInscrit = this.estInscritA(service);
     if (dejaInscrit) return;
 
     this.inscriptions.push(
