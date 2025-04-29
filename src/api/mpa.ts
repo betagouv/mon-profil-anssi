@@ -10,7 +10,7 @@ const creeServeur = (configurationServeur: ConfigurationServeur) => {
 
   const vingtParSeconde = rateLimit({ windowMs: 1000, limit: 20 });
   app.use(vingtParSeconde);
-  app.use(express.json());
+  app.use(express.json({ limit: "1mb" }));
 
   app.use("/profil", ressourceProfil(configurationServeur));
 
