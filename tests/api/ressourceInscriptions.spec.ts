@@ -13,7 +13,7 @@ import {
 } from "../../src/metier/serviceInscription";
 import { AdaptateurHorloge } from "../../src/metier/adaptateurHorloge";
 
-describe("La ressource profil", () => {
+describe("La ressource inscriptions", () => {
   let serveur: Express;
   let entrepotProfil: EntrepotProfilMemoire;
   const donneesProfilJeanDujardin = {
@@ -202,6 +202,56 @@ describe("La ressource profil", () => {
             new Date("2020-10-25"),
           );
         });
+
+        it("ne mets pas à jour la date d'inscription si elle est la même que celle déjà connue", async () => {
+          let entrepotAppele = false;
+          entrepotProfil.metsAJour = async () => {
+            entrepotAppele = true;
+          };
+          const jean = await entrepotProfil.parEmail("jean@beta.fr");
+
+          await postDepuisMss.send([
+            {
+              dateInscription: jean!.dateDInscriptionA("mss"),
+              donneesProfil: donneesProfilJeanDujardin,
+            },
+          ]);
+
+          assert.equal(entrepotAppele, false);
+        });
+      });
+    });
+
+    describe("lorsque les données sont incorrectes", () => {
+      it("retourne 400 avec l'information de la donnée manquante", async () => {
+        const reponse = await postDepuisMss.send([
+          {
+            dateInscription: new Date("2020-10-25"),
+            donneesProfil: {
+              ...donneesProfilJeanDujardin,
+              prenom: undefined,
+            },
+          },
+          {
+            donneesProfil: {
+              ...donneesProfilJeanDujardin,
+              email: "jean2@beta.fr",
+            },
+          },
+        ]);
+
+        assert.equal(reponse.status, 400);
+        assert.equal(reponse.body.erreurs.length, 2);
+        assert.equal(reponse.body.erreurs[0].email, "jean@beta.fr");
+        assert.equal(
+          reponse.body.erreurs[0].description,
+          "Le champ [prenom] est obligatoire",
+        );
+        assert.equal(reponse.body.erreurs[1].email, "jean2@beta.fr");
+        assert.equal(
+          reponse.body.erreurs[1].description,
+          "Le champ [dateInscription] est obligatoire",
+        );
       });
     });
   });
