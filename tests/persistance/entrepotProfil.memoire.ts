@@ -20,6 +20,8 @@ export class EntrepotProfilMemoire implements EntrepotProfil {
 
   async ajoute(profil: Profil) {
     const emailHash = this.hashEmail(profil.email);
+    if (this.items[emailHash])
+      throw new Error("Le profil existe déjà dans l'entrepôt")
     this.items[emailHash] = profil;
   }
 

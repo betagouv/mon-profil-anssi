@@ -22,12 +22,18 @@ const ressourceInscriptions = ({
     }
     for (let i = 0; i < donnees.length; i++) {
       let demandeInscription = donnees[i];
-      let profil = new Profil(demandeInscription.donneesProfil);
-      profil.inscrisAuServiceALaDate(
-        serviceClient,
-        new Date(demandeInscription.dateInscription),
+      let profil = await entrepotProfil.parEmail(
+        demandeInscription.donneesProfil.email,
       );
-      await entrepotProfil.ajoute(profil);
+      const dateInscription = new Date(demandeInscription.dateInscription);
+      if (profil) {
+        profil.inscrisAuServiceALaDate(serviceClient, dateInscription);
+        await entrepotProfil.metsAJour(profil);
+      } else {
+        let profil = new Profil(demandeInscription.donneesProfil);
+        profil.inscrisAuServiceALaDate(serviceClient, dateInscription);
+        await entrepotProfil.ajoute(profil);
+      }
     }
     reponse.sendStatus(201);
   });
