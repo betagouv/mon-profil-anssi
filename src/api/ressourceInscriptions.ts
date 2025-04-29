@@ -20,6 +20,14 @@ const ressourceInscriptions = ({
       reponse.sendStatus(200);
       return;
     }
+    if (donnees.length > 500) {
+      reponse
+        .status(413)
+        .send({
+          message: "Le nombre d'inscriptions simultanées maximal est de 500.",
+        });
+      return;
+    }
     for (const demandeInscription of donnees) {
       let profil = await entrepotProfil.parEmail(
         demandeInscription.donneesProfil.email,

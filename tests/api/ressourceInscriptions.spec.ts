@@ -75,6 +75,21 @@ describe("La ressource profil", () => {
       assert.equal(reponse.status, 200);
     });
 
+    it("limite le nombre d'inscriptions simultanées à 500", async () => {
+      const inscription = {
+        dateInscription: new Date("2020-10-25"),
+        donneesProfil: donneesProfilJeanDujardin,
+      };
+
+      const reponse = await postDepuisMss.send(Array(501).fill(inscription));
+
+      assert.equal(reponse.status, 413); // request entity too large
+      assert.equal(
+        reponse.body.message,
+        "Le nombre d'inscriptions simultanées maximal est de 500.",
+      );
+    });
+
     describe("lorsque le profil est inconnu", () => {
       it("ajoute le profil", async () => {
         const reponse = await postDepuisMss.send([
