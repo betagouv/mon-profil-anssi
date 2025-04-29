@@ -20,8 +20,7 @@ const ressourceInscriptions = ({
       reponse.sendStatus(200);
       return;
     }
-    for (let i = 0; i < donnees.length; i++) {
-      let demandeInscription = donnees[i];
+    for (const demandeInscription of donnees) {
       let profil = await entrepotProfil.parEmail(
         demandeInscription.donneesProfil.email,
       );
@@ -30,7 +29,7 @@ const ressourceInscriptions = ({
         profil.inscrisAuServiceALaDate(serviceClient, dateInscription);
         await entrepotProfil.metsAJour(profil);
       } else {
-        let profil = new Profil(demandeInscription.donneesProfil);
+        profil = new Profil(demandeInscription.donneesProfil);
         profil.inscrisAuServiceALaDate(serviceClient, dateInscription);
         await entrepotProfil.ajoute(profil);
       }
