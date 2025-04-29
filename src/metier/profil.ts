@@ -53,10 +53,12 @@ export class Profil {
   }
 
   inscrisAuServiceALaDate(service: string, dateInscription: Date) {
-    const dejaInscrit = this.estInscritA(service);
-    if (dejaInscrit) return;
-
-    this.inscriptions.push(new Inscription(service, dateInscription));
+    let inscriptionActuelle = this.inscriptionA(service);
+    if (inscriptionActuelle) {
+      inscriptionActuelle.date = dateInscription;
+    } else {
+      this.inscriptions.push(new Inscription(service, dateInscription));
+    }
   }
 
   inscrisAuService(service: string, adaptateurHorloge: AdaptateurHorloge) {
@@ -69,16 +71,15 @@ export class Profil {
   }
 
   estInscritA(service: string): boolean {
-    return this.inscriptions.some(
-      (inscription) => inscription.service === service,
-    );
+    return this.inscriptionA(service) !== undefined;
   }
 
   dateDInscriptionA(service: string): Date | undefined {
-    return this.inscriptions.find(
-      (inscription) => inscription.service === service,
-    )?.date;
+    return this.inscriptionA(service)?.date;
   }
+
+  private inscriptionA = (service: string): Inscription | undefined =>
+    this.inscriptions.find((inscription) => inscription.service === service);
 
   nombreInscriptions() {
     return this.inscriptions.length;
