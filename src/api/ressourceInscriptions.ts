@@ -48,25 +48,27 @@ const ressourceInscriptions = ({
       reponse.status(400).send({ erreurs });
       return;
     }
-    for (const demandeInscription of donnees) {
-      let profil = await entrepotProfil.parEmail(
-        demandeInscription.donneesProfil.email,
-      );
-      const dateInscription = new Date(demandeInscription.dateInscription);
-      if (profil) {
-        if (
-          profil.dateDInscriptionA(serviceClient)?.getTime() !==
-          dateInscription.getTime()
-        ) {
-          profil.inscrisAuServiceALaDate(serviceClient, dateInscription);
-          await entrepotProfil.metsAJour(profil);
-        }
-      } else {
-        profil = new Profil(demandeInscription.donneesProfil);
-        profil.inscrisAuServiceALaDate(serviceClient, dateInscription);
-        await entrepotProfil.ajoute(profil);
-      }
-    }
+    const promesses = donnees.map((demandeInscription) =>
+      entrepotProfil
+        .parEmail(demandeInscription.donneesProfil.email)
+        .then((profil) => {
+          const dateInscription = new Date(demandeInscription.dateInscription);
+          if (profil) {
+            if (
+              profil.dateDInscriptionA(serviceClient)?.getTime() !==
+              dateInscription.getTime()
+            ) {
+              profil.inscrisAuServiceALaDate(serviceClient, dateInscription);
+              return entrepotProfil.metsAJour(profil);
+            }
+          } else {
+            profil = new Profil(demandeInscription.donneesProfil);
+            profil.inscrisAuServiceALaDate(serviceClient, dateInscription);
+            return entrepotProfil.ajoute(profil);
+          }
+        }),
+    );
+    await Promise.all(promesses);
     reponse.sendStatus(201);
   });
   return routeur;
