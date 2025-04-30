@@ -1,4 +1,4 @@
-import { check } from "express-validator";
+import { body, param, query } from "express-validator";
 import { NextFunction, Request, Response } from "express";
 import { AdaptateurJWT } from "./adaptateurJWT";
 import { ServiceRevocationJeton } from "./serviceRevocationJeton";
@@ -24,9 +24,11 @@ export const fabriqueMiddleware = ({
   const aseptise =
     (...nomsParametres: string[]) =>
     async (requete: any, _reponse: any, suite: any) => {
-      const aseptisations = nomsParametres.map((p) =>
-        check(p).trim().escape().run(requete),
-      );
+      const aseptisations = nomsParametres.flatMap((p) => [
+        body(p).trim().escape().run(requete),
+        param(p).trim().escape().run(requete),
+        query(p).trim().escape().run(requete),
+      ]);
       await Promise.all(aseptisations);
       suite();
     };
