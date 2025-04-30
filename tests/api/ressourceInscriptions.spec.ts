@@ -90,6 +90,38 @@ describe("La ressource inscriptions", () => {
       );
     });
 
+    it("aseptise les paramètres", async () => {
+      const jeanInferieurDujardin = {
+        dateInscription: "2025-01-01",
+        donneesProfil: {
+          email: "jean<dujardin@beta.gouv.fr",
+          nom: "Dujardin<",
+          prenom: "Jean<",
+          organisation: {
+            nom: "DINUM<",
+            siret: "12345678<",
+            departement: "33<",
+          },
+          domainesSpecialite: ["RSSI<"],
+          telephone: "0102030405<",
+        },
+      };
+
+      await postDepuisMss.send([jeanInferieurDujardin]);
+
+      const utilisateur = await entrepotProfil.parEmail(
+        "jean&lt;dujardin@beta.gouv.fr",
+      );
+      assert.notEqual(utilisateur, undefined);
+      assert.equal(utilisateur!.nom, "Dujardin&lt;");
+      assert.equal(utilisateur!.prenom, "Jean&lt;");
+      assert.equal(utilisateur!.organisation.nom, "DINUM&lt;");
+      assert.equal(utilisateur!.organisation.siret, "12345678&lt;");
+      assert.equal(utilisateur!.organisation.departement, "33&lt;");
+      assert.equal(utilisateur!.domainesSpecialite[0], "RSSI&lt;");
+      assert.equal(utilisateur!.telephone, "0102030405&lt;");
+    });
+
     describe("lorsque le profil est inconnu", () => {
       it("ajoute le profil", async () => {
         const reponse = await postDepuisMss.send([
