@@ -85,7 +85,7 @@ describe("La ressource inscriptions", () => {
 
       assert.equal(reponse.status, 413); // request entity too large
       assert.equal(
-        reponse.body.message,
+        reponse.body.erreur,
         "Le nombre d'inscriptions simultanées maximal est de 500.",
       );
     });
@@ -276,12 +276,12 @@ describe("La ressource inscriptions", () => {
         assert.equal(reponse.body.erreurs.length, 2);
         assert.equal(reponse.body.erreurs[0].email, "jean@beta.fr");
         assert.equal(
-          reponse.body.erreurs[0].description,
+          reponse.body.erreurs[0].erreur,
           "Le champ [prenom] est obligatoire",
         );
         assert.equal(reponse.body.erreurs[1].email, "jean2@beta.fr");
         assert.equal(
-          reponse.body.erreurs[1].description,
+          reponse.body.erreurs[1].erreur,
           "Le champ [dateInscription] est obligatoire",
         );
       });
