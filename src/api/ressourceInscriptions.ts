@@ -14,63 +14,88 @@ const ressourceInscriptions = ({
 }: ConfigurationServeur) => {
   const routeur = Router();
 
-  routeur.post("/", middleware.decodeJeton(), async (requete, reponse) => {
-    const serviceClient = (requete as Request & { service: string }).service;
-    let donnees: DemandeInscription[] = requete.body;
-    if (donnees.length === 0) {
-      reponse.sendStatus(200);
-      return;
-    }
-    if (donnees.length > 500) {
-      reponse.status(413).send({
-        message: "Le nombre d'inscriptions simultanées maximal est de 500.",
-      });
-      return;
-    }
-    const erreurs = [];
-    for (const demandeInscription of donnees) {
+  routeur.post(
+    "/",
+    middleware.aseptise(
+      "*.donneesProfil.email",
+      "*.donneesProfil.nom",
+      "*.donneesProfil.prenom",
+      "*.donneesProfil.organisation.*",
+      "*.donneesProfil.domainesSpecialite.*",
+      "*.donneesProfil.telephone",
+    ),
+    middleware.decodeJeton(),
+    async (requete, reponse) => {
       try {
-        new Profil(demandeInscription.donneesProfil);
-        const dateInscription = new Date(demandeInscription.dateInscription);
-        if (dateInscription.toString() === "Invalid Date") {
-          throw new ErreurDonneesObligatoiresManquantes("dateInscription");
+        const serviceClient = (requete as Request & { service: string })
+          .service;
+        let donnees: DemandeInscription[] = requete.body;
+        if (donnees.length === 0) {
+          reponse.sendStatus(200);
+          return;
         }
-      } catch (e) {
-        if (e instanceof ErreurDonneesObligatoiresManquantes) {
-          erreurs.push({
-            email: demandeInscription.donneesProfil.email,
-            description: e.message,
+        if (donnees.length > 500) {
+          reponse.status(413).send({
+            message: "Le nombre d'inscriptions simultanées maximal est de 500.",
           });
+          return;
         }
-      }
-    }
-    if (erreurs.length > 0) {
-      reponse.status(400).send({ erreurs });
-      return;
-    }
-    const promesses = donnees.map((demandeInscription) =>
-      entrepotProfil
-        .parEmail(demandeInscription.donneesProfil.email)
-        .then((profil) => {
-          const dateInscription = new Date(demandeInscription.dateInscription);
-          if (profil) {
-            if (
-              profil.dateDInscriptionA(serviceClient)?.getTime() !==
-              dateInscription.getTime()
-            ) {
-              profil.inscrisAuServiceALaDate(serviceClient, dateInscription);
-              return entrepotProfil.metsAJour(profil);
+        const erreurs = [];
+        for (const demandeInscription of donnees) {
+          try {
+            new Profil(demandeInscription.donneesProfil);
+            const dateInscription = new Date(
+              demandeInscription.dateInscription,
+            );
+            if (dateInscription.toString() === "Invalid Date") {
+              throw new ErreurDonneesObligatoiresManquantes("dateInscription");
             }
-          } else {
-            profil = new Profil(demandeInscription.donneesProfil);
-            profil.inscrisAuServiceALaDate(serviceClient, dateInscription);
-            return entrepotProfil.ajoute(profil);
+          } catch (e) {
+            if (e instanceof ErreurDonneesObligatoiresManquantes) {
+              erreurs.push({
+                email: demandeInscription.donneesProfil.email,
+                description: e.message,
+              });
+            }
           }
-        }),
-    );
-    await Promise.all(promesses);
-    reponse.sendStatus(201);
-  });
+        }
+        if (erreurs.length > 0) {
+          reponse.status(400).send({ erreurs });
+          return;
+        }
+        const promesses = donnees.map((demandeInscription) =>
+          entrepotProfil
+            .parEmail(demandeInscription.donneesProfil.email)
+            .then((profil) => {
+              const dateInscription = new Date(
+                demandeInscription.dateInscription,
+              );
+              if (profil) {
+                if (
+                  profil.dateDInscriptionA(serviceClient)?.getTime() !==
+                  dateInscription.getTime()
+                ) {
+                  profil.inscrisAuServiceALaDate(
+                    serviceClient,
+                    dateInscription,
+                  );
+                  return entrepotProfil.metsAJour(profil);
+                }
+              } else {
+                profil = new Profil(demandeInscription.donneesProfil);
+                profil.inscrisAuServiceALaDate(serviceClient, dateInscription);
+                return entrepotProfil.ajoute(profil);
+              }
+            }),
+        );
+        await Promise.all(promesses);
+        reponse.sendStatus(201);
+      } catch (e) {
+        console.warn(e);
+        reponse.sendStatus(400);
+      }
+    },
+  );
   return routeur;
 };
 
