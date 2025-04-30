@@ -1,6 +1,19 @@
 import swagger_autogen from "swagger-autogen";
 
 const configureLaDocumentationSwagger = swagger_autogen();
+
+const donneesProfil = {
+  nom: "Dujardin",
+  prenom: "Jean",
+  organisation: {
+    nom: "ANSSI",
+    siret: "13000766900018",
+    departement: "75",
+  },
+  domainesSpecialite: ["RSSI"],
+  telephone: "0601020304",
+};
+
 const doc = {
   info: {
     title: "MonProfilANSSI",
@@ -9,20 +22,20 @@ const doc = {
     version: "1.0.0",
   },
   definitions: {
-    Profil: {
-      nom: "Dujardin",
-      prenom: "Jean",
-      organisation: {
-        nom: "ANSSI",
-        siret: "13000766900018",
-        departement: "75",
-      },
-      domainesSpecialite: ["RSSI"],
-      telephone: "0601020304",
+    Profil: donneesProfil,
+    Inscriptions: {
+      dateInscription: "2025-01-01",
+      donneesProfil,
     },
     Erreur: {
       erreur: "Le champ [nom] est obligatoire",
     },
+    ErreursInscriptions: [
+      {
+        email: "jean.dujardin@beta.gouv.fr",
+        erreur: "Le champ [nom] est obligatoire",
+      },
+    ],
   },
   securityDefinitions: {
     "Bearer token": {
