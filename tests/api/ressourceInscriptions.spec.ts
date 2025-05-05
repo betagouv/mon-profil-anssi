@@ -255,7 +255,7 @@ describe("La ressource inscriptions", () => {
     });
 
     describe("lorsque les données sont incorrectes", () => {
-      it("retourne 400 avec l'information de la donnée manquante", async () => {
+      it("retourne 400 avec l'information de la donnée de profil manquante", async () => {
         const reponse = await postDepuisMss.send([
           {
             dateInscription: new Date("2020-10-25"),
@@ -264,24 +264,30 @@ describe("La ressource inscriptions", () => {
               prenom: undefined,
             },
           },
-          {
-            donneesProfil: {
-              ...donneesProfilJeanDujardin,
-              email: "jean2@beta.fr",
-            },
-          },
         ]);
 
         assert.equal(reponse.status, 400);
-        assert.equal(reponse.body.erreurs.length, 2);
+        assert.equal(reponse.body.erreurs.length, 1);
         assert.equal(reponse.body.erreurs[0].email, "jean@beta.fr");
         assert.equal(
           reponse.body.erreurs[0].erreur,
           "Le champ [prenom] est obligatoire",
         );
-        assert.equal(reponse.body.erreurs[1].email, "jean2@beta.fr");
+      });
+
+      it("retourne 400 avec l'information de date invalide", async () => {
+        const reponse = await postDepuisMss.send([
+          {
+            dateInscription: undefined,
+            donneesProfil: donneesProfilJeanDujardin,
+          },
+        ]);
+
+        assert.equal(reponse.status, 400);
+        assert.equal(reponse.body.erreurs.length, 1);
+        assert.equal(reponse.body.erreurs[0].email, "jean@beta.fr");
         assert.equal(
-          reponse.body.erreurs[1].erreur,
+          reponse.body.erreurs[0].erreur,
           "Le champ [dateInscription] est obligatoire",
         );
       });
