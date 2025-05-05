@@ -82,10 +82,10 @@ const ressourceInscriptions = ({
               demandeInscription.dateInscription,
             );
             if (profil) {
-              if (
+              let lesDatesDInscriptionSontDifferentes =
                 profil.dateDInscriptionA(serviceClient)?.getTime() !==
-                dateInscription.getTime()
-              ) {
+                dateInscription.getTime();
+              if (lesDatesDInscriptionSontDifferentes) {
                 profil.inscrisAuServiceALaDate(serviceClient, dateInscription);
                 return entrepotProfil.metsAJour(profil);
               }
