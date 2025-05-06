@@ -1,3 +1,5 @@
+import knex from "knex";
+
 export const knexConfig = {
   development: {
     client: "pg",
@@ -13,3 +15,10 @@ export const knexConfig = {
     migrations: { tableName: "knex_migrations" },
   },
 };
+
+type NodeEnv = "development" | "production";
+const nodeEnv = process.env.NODE_ENV;
+if (!nodeEnv)
+  throw new Error("Configuration invalide : NODE_ENV non renseigné.");
+
+export const db = knex(knexConfig[nodeEnv as NodeEnv]);
