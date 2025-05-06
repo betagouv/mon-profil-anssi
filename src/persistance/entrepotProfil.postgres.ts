@@ -1,20 +1,9 @@
 import { Profil } from "../metier/profil";
-import knex, { Knex } from "knex";
 import { EntrepotProfil } from "../metier/entrepotProfil";
-import { knexConfig } from "./knexfile";
+import { db } from "./knexfile";
 import { Inscription } from "../metier/inscription";
 import { AdaptateurHachage } from "./adaptateurHachage";
-import { AdaptateurChiffrement, ObjetChiffre } from "./adaptateurChiffrement";
-import { ProfilDb } from "./profilDb";
-
-type NodeEnv = "development" | "production";
-
-const connexion = () => {
-  const nodeEnv = process.env.NODE_ENV;
-  if (!nodeEnv)
-    throw new Error("Configuration invalide : NODE_ENV non renseigné.");
-  return knex(knexConfig[nodeEnv as NodeEnv]);
-};
+import { AdaptateurChiffrement } from "./adaptateurChiffrement";
 
 export const entrepotProfilPostgres = ({
   adaptateurChiffrement,
@@ -27,11 +16,7 @@ export const entrepotProfilPostgres = ({
     return adaptateurHachage.hacheSha256(email);
   };
 
-  async function metsAJourInscriptions(
-    db: Knex<any, unknown[]>,
-    profil: Profil,
-    emailHash: string,
-  ) {
+  async function metsAJourInscriptions(profil: Profil, emailHash: string) {
     const donnees = await adaptateurChiffrement.chiffre({
       email: profil.email,
     });
@@ -48,7 +33,6 @@ export const entrepotProfilPostgres = ({
 
   return {
     async metsAJour(profil: Profil): Promise<void> {
-      const db = connexion();
       const {
         email,
         prenom,
@@ -70,11 +54,10 @@ export const entrepotProfilPostgres = ({
         email_hash: emailHash,
         donnees,
       });
-      await metsAJourInscriptions(db, profil, emailHash);
+      await metsAJourInscriptions(profil, emailHash);
     },
 
     async ajoute(profil: Profil): Promise<void> {
-      const db = connexion();
       const {
         email,
         prenom,
@@ -96,11 +79,10 @@ export const entrepotProfilPostgres = ({
         email_hash: emailHash,
         donnees,
       });
-      await metsAJourInscriptions(db, profil, emailHash);
+      await metsAJourInscriptions(profil, emailHash);
     },
 
     async parEmail(email: string): Promise<Profil | undefined> {
-      const db = connexion();
       const emailHash = hashEmail(email);
       const donneesProfilChiffrees = await db("profils")
         .where({ email_hash: emailHash })
