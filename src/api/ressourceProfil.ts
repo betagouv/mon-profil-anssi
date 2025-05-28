@@ -38,7 +38,7 @@ const ressourceProfil = ({
         reponse.sendStatus(400);
         return;
       }
-      const profil = await entrepotProfil.parEmail(email as string);
+      const profil = await entrepotProfil.parEmail((email as string).toLowerCase());
       if (!profil) {
         // #swagger.responses[404] = { description: 'L\'utilisateur est introuvable' }
         reponse.sendStatus(404);
