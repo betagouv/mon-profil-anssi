@@ -76,7 +76,7 @@ const ressourceInscriptions = ({
       }
       const promesses = donnees.map((demandeInscription) =>
         entrepotProfil
-          .parEmail(demandeInscription.donneesProfil.email)
+          .parEmail(demandeInscription.donneesProfil.email.toLowerCase())
           .then((profil) => {
             const dateInscription = new Date(
               demandeInscription.dateInscription,
