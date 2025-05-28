@@ -85,7 +85,7 @@ describe("La ressource profil", () => {
 
     it("aseptise les paramètres", async () => {
       const jeanInferieurDujardin = {
-        email: "jean&lt;Dujardin",
+        email: "jean&lt;dujardin",
         nom: "Jean Dujardin",
         prenom: " d",
         organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
@@ -93,7 +93,7 @@ describe("La ressource profil", () => {
       };
       await entrepotProfil.ajoute(new Profil(jeanInferieurDujardin));
 
-      const reponse = await requeteGETAuthentifiee("/profil/jean<Dujardin");
+      const reponse = await requeteGETAuthentifiee("/profil/jean<dujardin");
 
       assert.equal(reponse.status, 200);
       assert.equal(reponse.body.nom, "Jean Dujardin");
@@ -276,6 +276,23 @@ describe("La ressource profil", () => {
         .set("Accept", "application/json");
 
       assert.equal(reponse.status, 401);
+    });
+
+    describe("concernant la casse de l'email", () => {
+      it("mets à jour un profil existant, même lorsque les casses diffèrent", async () => {
+        await requetePUTAuthentifiee(
+          "/profil/JEAN@beta.fr",
+        ).send({
+          nom: "Dujardin",
+          prenom: "JEAN",
+          organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
+          domainesSpecialite: ["RSSI"],
+          telephone: "0607080910",
+        });
+
+        const jeanAJour = await entrepotProfil.parEmail("jean@beta.fr");
+        assert.equal(jeanAJour?.prenom, "JEAN");
+      });
     });
   });
 });
