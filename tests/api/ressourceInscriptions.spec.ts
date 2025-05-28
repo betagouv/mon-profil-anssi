@@ -292,5 +292,24 @@ describe("La ressource inscriptions", () => {
         );
       });
     });
+
+    describe("concernant la casse des emails", () => {
+      it("utilise l'email en minuscule pour vérifier son existence", async () => {
+        await serviceInscription.nouveauProfil(
+          donneesProfilJeanDujardin,
+          "mac",
+        );
+
+        await postDepuisMss.send([
+          {
+            dateInscription: new Date("2020-10-25"),
+            donneesProfil: { ...donneesProfilJeanDujardin, email: "JEAN@beta.fr" },
+          },
+        ]);
+
+        const jean = await entrepotProfil.parEmail("jean@beta.fr");
+        assert.equal(jean?.estInscritA("mss"), true);
+      });
+    });
   });
 });
