@@ -127,4 +127,13 @@ describe("Sur construction d'un profil", () => {
       },
     );
   });
+
+  it("transforme son email en minuscule lors de la création", () => {
+    const profil = new Profil({
+      ...donneesCreationProfil,
+      email: "JEAN@beta.fr",
+    } as DonneesCreationProfil);
+
+    assert.equal(profil.email, "jean@beta.fr");
+  });
 });

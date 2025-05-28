@@ -88,7 +88,7 @@ const ressourceProfil = ({
       const { email } = requete.params;
       const { nom, prenom, telephone, organisation, domainesSpecialite } =
         requete.body;
-      let profil = await entrepotProfil.parEmail(email);
+      let profil = await entrepotProfil.parEmail(email.toLowerCase());
       const serviceClient = (requete as Request & { service: string }).service;
 
       if (!profil) {

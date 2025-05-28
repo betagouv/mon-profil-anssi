@@ -27,7 +27,7 @@ export class Profil {
     this.valide(donneesCreationProfil);
     const { email, nom, prenom, organisation, domainesSpecialite, telephone } =
       donneesCreationProfil;
-    this.email = email;
+    this.email = email.toLowerCase();
     this.nom = nom;
     this.prenom = prenom;
     this.organisation = organisation;
