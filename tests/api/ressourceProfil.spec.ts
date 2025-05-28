@@ -106,6 +106,12 @@ describe("La ressource profil", () => {
 
       assert.equal(reponse.status, 401);
     });
+
+    it("est insensible à la casse de l'email", async () => {
+      const reponse = await requeteGETAuthentifiee("/profil/JEAN@beta.fr");
+
+      assert.equal(reponse.body.email, "jean@beta.fr");
+    });
   });
 
   describe("Sur demande de mise à jour du profil", () => {
