@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "module": "nodenext",
   "scripts": {
-    "start:clever-cloud":"npm run pre-start:knex-migrate-latest && node --require dotenv/config dist/src/serveur.js",
-    "start:local":"npm run pre-start:knex-migrate-latest && NODE_ENV=development nodemon --require dotenv/config src/serveur.ts",
-    "pre-start:knex-migrate-latest":"tsx --require dotenv/config ./node_modules/knex/bin/cli.js migrate:latest",
+    "start:clever-cloud": "npm run pre-start:knex-migrate-latest && node --require dotenv/config dist/src/serveur.js",
+    "start:local": "npm run pre-start:knex-migrate-latest && NODE_ENV=development nodemon --require dotenv/config src/serveur.ts",
+    "pre-start:knex-migrate-latest": "tsx --require dotenv/config ./node_modules/knex/bin/cli.js migrate:latest",
     "test": "node --import tsx --test './tests/**/*.spec.ts'",
     "test:watch": "node --watch --import tsx --test './tests/**/*.spec.ts'",
     "genere-documentation": "mkdir -p dist/public & node --import tsx ./src/api/swagger.ts"
