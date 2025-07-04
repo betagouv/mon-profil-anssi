@@ -58,6 +58,25 @@ Le serveur devrait être accessible depuis un navigateur à l'URL
 `http://localhost:[PORT_MPA]` (avec comme valeur pour `PORT_MPA` celle indiquée
 dans le fichier `.env`).
 
+## Création d'une clé d'API client en local
+
+Entrez dans le conteneur applicatif :
+```sh
+$ docker compose exec -it api bash
+```
+
+Puis entrez dans l'interpéteur node avec typescript activé :
+
+```sh
+node --import tsx
+```
+
+Et exécutez les instructions suivantes :
+```ts
+const { ConsoleJetonJWT } = (await import("./src/admin/consoleJetonJWT.ts")).default;
+ConsoleJetonJWT.forgeJeton("mss");
+```
+
 ### Outils en local
 
 - `Postgres` est relayé sur le port `5433` de l'hôte. Donc le requêtage via un outil graphique est possible.
