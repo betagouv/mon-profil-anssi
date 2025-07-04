@@ -53,6 +53,7 @@ export const fabriqueMiddleware = ({
       }
       requete.service = contenuJeton.service;
     } catch (e) {
+      console.log("Exception inattendue: ", e);
       reponse.sendStatus(401);
       return;
     }
