@@ -48,6 +48,13 @@ describe("La ressource profil", () => {
         serviceRevocationJeton: fauxServiceRevocationJeton,
       }),
       adaptateurHorloge: { maintenant: () => new Date("2024-12-17") },
+      serveurLab: {
+        reseau: {
+          trustProxy: 0,
+          ipAutorisees: false,
+          maxRequetesParMinute: 600,
+        },
+      },
     });
   });
 

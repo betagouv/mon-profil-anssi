@@ -8,6 +8,7 @@ import { entrepotRevocationJetonPostgres } from "./persistance/entrepotRevocatio
 import { fabriqueAdaptateurHachage } from "./persistance/adaptateurHachage";
 import { adaptateurEnvironnement } from "./adaptateurEnvironnement";
 import { fabriqueAdaptateurChiffrement } from "./persistance/adaptateurChiffrement";
+import { configurationServeurLabEnvironnement } from "@lab-anssi/lib";
 
 const port = process.env.PORT || 3001;
 
@@ -26,6 +27,7 @@ creeServeur({
     }),
   }),
   adaptateurHorloge,
+  serveurLab: configurationServeurLabEnvironnement(),
 }).listen(port, () => {
   console.log(`L'API MonProfilANSSI est démarrée sur le port ${port}`);
 });
