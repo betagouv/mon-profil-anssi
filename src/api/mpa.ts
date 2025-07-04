@@ -2,14 +2,13 @@ import express from "express";
 import { ressourceProfil } from "./ressourceProfil";
 import { ConfigurationServeur } from "./configurationServeur";
 import redoc from "redoc-express";
-import rateLimit from "express-rate-limit";
 import { ressourceInscriptions } from "./ressourceInscriptions";
 
-const creeServeur = (configurationServeur: ConfigurationServeur) => {
-  const app = express();
+import { creeServeurLab } from "@lab-anssi/lib";
 
-  const vingtParSeconde = rateLimit({ windowMs: 1000, limit: 20 });
-  app.use(vingtParSeconde);
+const creeServeur = (configurationServeur: ConfigurationServeur) => {
+  const app = creeServeurLab(configurationServeur.serveurLab);
+
   app.use(express.json({ limit: "1mb" }));
 
   app.use("/profil", ressourceProfil(configurationServeur));

@@ -57,6 +57,13 @@ describe("La ressource inscriptions", () => {
         serviceRevocationJeton: fauxServiceRevocationJeton,
       }),
       adaptateurHorloge,
+      serveurLab: {
+        reseau: {
+          trustProxy: 0,
+          ipAutorisees: false,
+          maxRequetesParMinute: 600,
+        },
+      },
     });
     postDepuisMss = request(serveur)
       .post("/inscriptions")
