@@ -30,7 +30,11 @@ $ docker network create lab-network
 
 Créer un fichier `.env` à partir du fichier `.env.template` et renseigner les diverses variables d'environnement.
 
-Lancer le script `scripts/dev/start.sh`
+Démarrer le conteneur de la base de données.
+
+```sh
+$ docker compose up mpa-db
+```
 
 Se connecter au conteneur de la base de données et créer une nouvelle base `mpa` pour un utilisateur postgres.
 
@@ -38,21 +42,11 @@ Se connecter au conteneur de la base de données et créer une nouvelle base `mp
 $ docker compose exec mpa-db createdb -U postgres mpa
 ```
 
-Exécuter les migrations depuis le conteneur du serveur web.
-
-```sh
-$ docker compose exec api npx knex migrate:latest
-```
-
 Le serveur est configuré et prêt à être redémarré.
 
 ## Lancement du serveur
 
-```sh
-$ docker-compose restart api
-```
-
-(Ou arret et ré-exécution de `./script/start.sh`)
+Lancer le script `scripts/dev/start.sh`
 
 Le serveur devrait être accessible depuis un navigateur à l'URL
 `http://localhost:[PORT_MPA]` (avec comme valeur pour `PORT_MPA` celle indiquée
@@ -60,15 +54,9 @@ dans le fichier `.env`).
 
 ## Création d'une clé d'API client en local
 
-Entrez dans le conteneur applicatif :
+Entrez dans un interpréteur node dans le conteneur applicatif :
 ```sh
-$ docker compose exec -it api bash
-```
-
-Puis entrez dans l'interpéteur node avec typescript activé :
-
-```sh
-node --import tsx
+$ docker compose exec api bash -c "node --import tsx"
 ```
 
 Et exécutez les instructions suivantes :
