@@ -19,9 +19,6 @@
   "bugs": {
     "url": "https://github.com/betagouv/mon-profil-anssi/issues"
   },
-  "engines": {
-    "node": "^23.3.0"
-  },
   "homepage": "https://github.com/betagouv/mon-profil-anssi#readme",
   "dependencies": {
     "@lab-anssi/lib": "2.0.0",
