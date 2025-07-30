@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-docker compose up api --build
+NODE_VERSION="$(cat .nvmrc)" docker compose up api --build
