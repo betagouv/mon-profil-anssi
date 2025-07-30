@@ -1,4 +1,6 @@
-FROM docker.io/node:23
+ARG NODE_VERSION=latest
+
+FROM docker.io/node:$NODE_VERSION
 
 RUN npm install -g npm
 

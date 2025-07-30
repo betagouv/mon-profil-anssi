@@ -13,6 +13,8 @@ services:
   api:
     build:
       context: .
+      args:
+        NODE_VERSION: ${NODE_VERSION:-latest}
     env_file:
       - .env
     environment:
