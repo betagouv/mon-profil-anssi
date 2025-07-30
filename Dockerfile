@@ -1,4 +1,4 @@
-FROM node:23
+FROM docker.io/node:23
 
 RUN npm install -g npm
 
