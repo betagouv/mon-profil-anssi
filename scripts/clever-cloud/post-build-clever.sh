@@ -1,4 +1,4 @@
 #! /bin/sh
 
-npx tsc
+./node_modules/.bin/tsc
 npm run genere-documentation
