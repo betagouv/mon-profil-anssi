@@ -30,7 +30,7 @@ jobs:
         run: npm ci
 
       - name: Contrôler le Typescript du Backend
-        run: npx tsc --noEmit
+        run: ./node_modules/.bin/tsc --noEmit
 
       - name: Exécuter les tests
         run: npm test
