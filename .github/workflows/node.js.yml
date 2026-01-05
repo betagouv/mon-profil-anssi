@@ -17,6 +17,8 @@ jobs:
       - name: Cloner le dépôt Git
         uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - name: Déterminer la version de Node.js à utiliser
         run: |
           echo "NODE_VERSION=$(./scripts/get-node-version.sh)" >> $GITHUB_ENV
@@ -25,12 +27,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
 
       - name: Installer les dépendances
-        run: npm ci
+        run: pnpm install
 
       - name: Contrôler le Typescript du Backend
         run: ./node_modules/.bin/tsc --noEmit
 
       - name: Exécuter les tests
-        run: npm test
+        run: pnpm test
