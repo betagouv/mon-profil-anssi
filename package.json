@@ -9,7 +9,8 @@
     "pre-start:knex-migrate-latest": "tsx --require dotenv/config ./node_modules/knex/bin/cli.js migrate:latest",
     "test": "node --import tsx --test './tests/**/*.spec.ts'",
     "test:watch": "node --watch --import tsx --test './tests/**/*.spec.ts'",
-    "genere-documentation": "mkdir -p dist/public & node --import tsx ./src/api/swagger.ts"
+    "genere-documentation": "mkdir -p dist/public & node --import tsx ./src/api/swagger.ts",
+    "preinstall": "npx only-allow@1.2.2 pnpm"
   },
   "repository": {
     "type": "git",
