@@ -85,7 +85,8 @@ const ressourceProfil = ({
               "Bearer token": []
             }]
       */
-      const { email } = requete.params;
+      const { email: emailParametre } = requete.params;
+      const email = emailParametre as string;
       const { nom, prenom, telephone, organisation, domainesSpecialite } =
         requete.body;
       let profil = await entrepotProfil.parEmail(email.toLowerCase());
