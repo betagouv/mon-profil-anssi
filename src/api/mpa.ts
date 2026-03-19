@@ -1,10 +1,11 @@
 import express from "express";
-import { ressourceProfil } from "./ressourceProfil";
-import { ConfigurationServeur } from "./configurationServeur";
 import redoc from "redoc-express";
+import { ConfigurationServeur } from "./configurationServeur";
 import { ressourceInscriptions } from "./ressourceInscriptions";
+import { ressourceProfil } from "./ressourceProfil";
 
 import { creeServeurLab } from "@lab-anssi/lib";
+import { ressourceRechercheProfils } from "./ressourceRechercheProfils";
 
 const creeServeur = (configurationServeur: ConfigurationServeur) => {
   const app = creeServeurLab(configurationServeur.serveurLab);
@@ -12,6 +13,7 @@ const creeServeur = (configurationServeur: ConfigurationServeur) => {
   app.use(express.json({ limit: "1mb" }));
 
   app.use("/profil", ressourceProfil(configurationServeur));
+  app.use("/profils", ressourceRechercheProfils(configurationServeur));
 
   app.use("/inscriptions", ressourceInscriptions(configurationServeur));
 
@@ -33,3 +35,4 @@ const creeServeur = (configurationServeur: ConfigurationServeur) => {
 };
 
 export { creeServeur };
+

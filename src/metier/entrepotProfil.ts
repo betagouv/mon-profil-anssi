@@ -6,4 +6,6 @@ export interface EntrepotProfil {
   ajoute(profil: Profil): Promise<void>;
 
   metsAJour(profil: Profil): Promise<void>;
+
+  parEmails(emails: string[]): Promise<Profil[]>;
 }

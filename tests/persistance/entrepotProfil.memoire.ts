@@ -1,5 +1,5 @@
-import { Profil } from "../../src/metier/profil";
 import { EntrepotProfil } from "../../src/metier/entrepotProfil";
+import { Profil } from "../../src/metier/profil";
 import { AdaptateurHachage } from "../../src/persistance/adaptateurHachage";
 
 export class EntrepotProfilMemoire implements EntrepotProfil {
@@ -30,6 +30,12 @@ export class EntrepotProfilMemoire implements EntrepotProfil {
     if (!profilTrouve) return;
 
     this.items[this.hashEmail(profil.email)] = profil;
+  }
+
+  async parEmails(emails: string[]): Promise<Profil[]> {
+    return Promise
+      .all(emails.map(e => this.parEmail(e)))
+      .then(profils => profils.filter(p => p !== undefined));
   }
 
   nombre() {
