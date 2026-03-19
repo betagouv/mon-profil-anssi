@@ -48,7 +48,12 @@ Le serveur est configuré et prêt à être redémarré.
 
 ## Lancement du serveur
 
-Lancer le script `scripts/dev/start.sh`
+Lancer :
+
+```shell
+pnpm install
+pnpm start:local`
+```
 
 Le serveur devrait être accessible depuis un navigateur à l'URL
 `http://localhost:[PORT_MPA]` (avec comme valeur pour `PORT_MPA` celle indiquée
@@ -57,13 +62,16 @@ dans le fichier `.env`).
 ## Création d'une clé d'API client en local
 
 Entrez dans un interpréteur node dans le conteneur applicatif :
+
 ```sh
 $ docker compose exec api bash -c "node --import tsx"
 ```
 
 Et exécutez les instructions suivantes :
+
 ```ts
-const { ConsoleJetonJWT } = (await import("./src/admin/consoleJetonJWT.ts")).default;
+const { ConsoleJetonJWT } = (await import("./src/admin/consoleJetonJWT.ts"))
+  .default;
 ConsoleJetonJWT.forgeJeton("mss");
 ```
 
