@@ -1,9 +1,9 @@
-import { Profil } from "../metier/profil";
 import { EntrepotProfil } from "../metier/entrepotProfil";
-import { db } from "./knexfile";
 import { Inscription } from "../metier/inscription";
-import { AdaptateurHachage } from "./adaptateurHachage";
+import { Profil } from "../metier/profil";
 import { AdaptateurChiffrement } from "./adaptateurChiffrement";
+import { AdaptateurHachage } from "./adaptateurHachage";
+import { db } from "./knexfile";
 
 export const entrepotProfilPostgres = ({
   adaptateurChiffrement,
@@ -103,6 +103,29 @@ export const entrepotProfilPostgres = ({
         (donnees) => new Inscription(donnees.service, donnees.date_inscription),
       );
       return profil;
+    },
+
+    async parEmails(emails: string[]): Promise<Profil[]> {
+      const emailHashes = emails.map(hashEmail);
+      const donneesProfilsChiffrees = await db("profils")
+        .whereIn("email_hash", emailHashes)
+        .select();
+
+      return Promise.all(
+        donneesProfilsChiffrees.map(async (donneesProfilChiffrees) => {
+          const donneesProfil = await adaptateurChiffrement.dechiffre<Profil>(
+            donneesProfilChiffrees.donnees,
+          );
+          const profil = new Profil(donneesProfil);
+          const donneesInscriptions = await db("inscriptions")
+            .where("email_hash", donneesProfilChiffrees.email_hash)
+            .select();
+          profil.inscriptions = donneesInscriptions.map(
+            (donnees) => new Inscription(donnees.service, donnees.date_inscription),
+          );
+          return profil;
+        })
+      );
     },
   };
 };
