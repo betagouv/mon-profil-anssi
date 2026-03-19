@@ -18,6 +18,11 @@ jobs:
         with:
           fetch-depth: 0 # Cloner l'intégralité du dépôt, pour ne pas avoir de « shallow repo » rejeté par Clever
 
+      - name: Configurer Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: ".nvmrc"
+
       - name: Installer la CLI Clever Cloud
         shell: bash
         run: npm install -g clever-tools@4.4.0
@@ -52,6 +57,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Cloner l'intégralité du dépôt, pour ne pas avoir de « shallow repo » rejeté par Clever
+
+      - name: Configurer Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: ".nvmrc"
 
       - name: Installer la CLI Clever Cloud
         shell: bash
