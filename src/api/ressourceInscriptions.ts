@@ -16,14 +16,6 @@ const ressourceInscriptions = ({
 
   routeur.post(
     "/",
-    middleware.aseptise(
-      "*.donneesProfil.email",
-      "*.donneesProfil.nom",
-      "*.donneesProfil.prenom",
-      "*.donneesProfil.organisation.*",
-      "*.donneesProfil.domainesSpecialite.*",
-      "*.donneesProfil.telephone",
-    ),
     middleware.decodeJeton(),
     async (requete, reponse) => {
       // #swagger.tags = ['Inscriptions']

@@ -1,4 +1,3 @@
-import { body, param, query } from "express-validator";
 import { NextFunction, Request, Response } from "express";
 import { AdaptateurJWT } from "./adaptateurJWT";
 import { ServiceRevocationJeton } from "./serviceRevocationJeton";
@@ -10,7 +9,6 @@ type FonctionMiddleware = (
 ) => Promise<void>;
 
 export type Middleware = {
-  aseptise: (...nomsParametres: string[]) => FonctionMiddleware;
   decodeJeton: () => FonctionMiddleware;
 };
 
@@ -21,18 +19,6 @@ export const fabriqueMiddleware = ({
   adaptateurJWT: AdaptateurJWT;
   serviceRevocationJeton: ServiceRevocationJeton;
 }): Middleware => {
-  const aseptise =
-    (...nomsParametres: string[]) =>
-    async (requete: any, _reponse: any, suite: any) => {
-      const aseptisations = nomsParametres.flatMap((p) => [
-        body(p).trim().escape().run(requete),
-        param(p).trim().escape().run(requete),
-        query(p).trim().escape().run(requete),
-      ]);
-      await Promise.all(aseptisations);
-      suite();
-    };
-
   const decodeJeton = () => async (requete: any, reponse: any, suite: any) => {
     let header = requete.headers["authorization"];
     if (!header) {
@@ -61,7 +47,6 @@ export const fabriqueMiddleware = ({
   };
 
   return {
-    aseptise,
     decodeJeton,
   };
 };
