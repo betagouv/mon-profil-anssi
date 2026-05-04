@@ -8,7 +8,7 @@ describe("Sur construction d'un profil", () => {
   const organisation: Organisation = {
     nom: "DINUM",
     departement: "33",
-    siret: "1234",
+    siret: "13002526500013",
   };
   const donneesCreationProfil: Partial<DonneesCreationProfil> = {
     prenom: "Jean",
