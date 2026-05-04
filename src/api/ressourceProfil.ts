@@ -17,7 +17,6 @@ const ressourceProfil = ({
 
   routeur.get(
     "/:email",
-    middleware.aseptise("email"),
     middleware.decodeJeton(),
     async (requete: Request, reponse: Response) => {
       // #swagger.tags = ['Profil']
@@ -52,14 +51,6 @@ const ressourceProfil = ({
 
   routeur.put(
     "/:email",
-    middleware.aseptise(
-      "email",
-      "nom",
-      "prenom",
-      "organisation.*",
-      "domainesSpecialite.*",
-      "telephone",
-    ),
     middleware.decodeJeton(),
     async (requete: Request, reponse) => {
       // #swagger.tags = ['Profil']

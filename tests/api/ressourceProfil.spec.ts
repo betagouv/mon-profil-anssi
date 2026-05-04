@@ -90,22 +90,6 @@ describe("La ressource profil", () => {
       assert.equal(reponse.status, 404);
     });
 
-    it("aseptise les paramètres", async () => {
-      const jeanInferieurDujardin = {
-        email: "jean&lt;dujardin@beta.fr",
-        nom: "Jean Dujardin",
-        prenom: " d",
-        organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
-        domainesSpecialite: ["RSSI"],
-      };
-      await entrepotProfil.ajoute(new Profil(jeanInferieurDujardin));
-
-      const reponse = await requeteGETAuthentifiee("/profil/jean<dujardin@beta.fr");
-
-      assert.equal(reponse.status, 200);
-      assert.equal(reponse.body.nom, "Jean Dujardin");
-    });
-
     it("renvoie une erreur 401 si le jeton est invalide", async () => {
       const reponse = await request(serveur)
         .get("/profil/jean@beta.fr")
@@ -224,41 +208,6 @@ describe("La ressource profil", () => {
         assert.equal(reponse.badRequest, true);
         assert.equal(reponse.body.erreur, "Le champ [prenom] est obligatoire");
       });
-    });
-
-    it("aseptise les paramètres", async () => {
-      const jeanSup = {
-        email: "&gt;jean@beta.fr",
-        nom: "Dujardin",
-        prenom: "Jean",
-        organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
-        domainesSpecialite: ["RSSI", "JURI"],
-        telephone: "0607080910",
-      };
-      await entrepotProfil.ajoute(new Profil(jeanSup));
-
-      const reponse = await requetePUTAuthentifiee(
-        "/profil/>jean@beta.fr",
-      ).send({
-        nom: "Dujardin>",
-        prenom: "Jean>",
-        organisation: { nom: "DINUM>", siret: "12345678>", departement: "33>" },
-        domainesSpecialite: ["RSSI>", "JURI>"],
-        telephone: "0607080910>",
-      });
-
-      assert.equal(reponse.status, 200);
-      let profilAJour = await entrepotProfil.parEmail("&gt;jean@beta.fr");
-      assert.equal(profilAJour!.nom, "Dujardin&gt;");
-      assert.equal(profilAJour!.prenom, "Jean&gt;");
-      assert.equal(profilAJour!.organisation.nom, "DINUM&gt;");
-      assert.equal(profilAJour!.organisation.siret, "12345678&gt;");
-      assert.equal(profilAJour!.organisation.departement, "33&gt;");
-      assert.deepEqual(profilAJour!.domainesSpecialite, [
-        "RSSI&gt;",
-        "JURI&gt;",
-      ]);
-      assert.equal(profilAJour!.telephone, "0607080910&gt;");
     });
 
     it("ignore les informations vides", async () => {
