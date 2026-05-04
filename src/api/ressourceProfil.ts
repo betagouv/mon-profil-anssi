@@ -33,11 +33,6 @@ const ressourceProfil = ({
             }]
        */
       const { email } = requete.params;
-      if (!email) {
-        // #swagger.responses[400] = { description: 'L\'email n\'est pas présent dans la requête' }
-        reponse.sendStatus(400);
-        return;
-      }
       const profil = await entrepotProfil.parEmail((email as string).toLowerCase());
       if (!profil) {
         // #swagger.responses[404] = { description: 'L\'utilisateur est introuvable' }
