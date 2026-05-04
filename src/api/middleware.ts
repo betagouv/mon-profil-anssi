@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import * as z from 'zod';
 import { AdaptateurJWT } from "./adaptateurJWT";
 import { ServiceRevocationJeton } from "./serviceRevocationJeton";
 
@@ -10,6 +11,7 @@ type FonctionMiddleware = (
 
 export type Middleware = {
   decodeJeton: () => FonctionMiddleware;
+  valideRequete: <TZod extends z.ZodType, TReq extends z.infer<TZod>>(objet: TZod) => (requete: TReq & Request, reponse: Response, suite: NextFunction) => Promise<void | Response>;
 };
 
 export const fabriqueMiddleware = ({
@@ -46,7 +48,16 @@ export const fabriqueMiddleware = ({
     suite();
   };
 
+  const valideRequete =
+    <TZod extends z.ZodType, TReq extends z.infer<TZod>>(objet: TZod) =>
+    async (requete: TReq & Request, reponse: Response, suite: NextFunction) => {
+      const resultat = objet.safeParse(requete) as z.ZodSafeParseResult<z.core.output<TZod>>;
+      if (!resultat.success) return reponse.status(400).send({erreurs: z.flattenError(resultat.error)});
+      return suite();
+    };
+
   return {
     decodeJeton,
+    valideRequete,
   };
 };
