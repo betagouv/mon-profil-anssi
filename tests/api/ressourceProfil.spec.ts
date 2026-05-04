@@ -36,7 +36,7 @@ describe("La ressource profil", () => {
       email: "jean@beta.fr",
       nom: "Dujardin",
       prenom: "Jean",
-      organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
+      organisation: { nom: "DINUM", siret: "13002526500013", departement: "33" },
       domainesSpecialite: ["RSSI", "JURI"],
       telephone: "0607080910",
     };
@@ -78,7 +78,7 @@ describe("La ressource profil", () => {
         email: "jean@beta.fr",
         nom: "Dujardin",
         prenom: "Jean",
-        organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
+        organisation: { nom: "DINUM", siret: "13002526500013", departement: "33" },
         domainesSpecialite: ["RSSI", "JURI"],
         telephone: "0607080910",
       });
@@ -125,7 +125,7 @@ describe("La ressource profil", () => {
           prenom: "Jean2",
           organisation: {
             nom: "DINUM2",
-            siret: "123456782",
+            siret: "13002526500014",
             departement: "332",
           },
           domainesSpecialite: ["RSSI2", "JURI2"],
@@ -138,7 +138,7 @@ describe("La ressource profil", () => {
       assert.equal(profilAJour!.nom, "Dujardin2");
       assert.equal(profilAJour!.prenom, "Jean2");
       assert.equal(profilAJour!.organisation.nom, "DINUM2");
-      assert.equal(profilAJour!.organisation.siret, "123456782");
+      assert.equal(profilAJour!.organisation.siret, "13002526500014");
       assert.equal(profilAJour!.organisation.departement, "332");
       assert.deepEqual(profilAJour!.domainesSpecialite, ["RSSI2", "JURI2"]);
       assert.equal(profilAJour!.telephone, "06070809102");
@@ -175,7 +175,7 @@ describe("La ressource profil", () => {
           email: "jean@beta.fr",
           nom: "Dujardin",
           prenom: "Jean",
-          organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
+          organisation: { nom: "DINUM", siret: "13002526500013", departement: "33" },
           domainesSpecialite: ["RSSI"],
           telephone: "0607080910",
         });
@@ -186,7 +186,7 @@ describe("La ressource profil", () => {
         assert.equal(profilAjoute!.nom, "Dujardin");
         assert.equal(profilAjoute!.prenom, "Jean");
         assert.equal(profilAjoute!.organisation.nom, "DINUM");
-        assert.equal(profilAjoute!.organisation.siret, "12345678");
+        assert.equal(profilAjoute!.organisation.siret, "13002526500013");
         assert.equal(profilAjoute!.organisation.departement, "33");
         assert.deepEqual(profilAjoute!.domainesSpecialite, ["RSSI"]);
         assert.equal(profilAjoute!.telephone, "0607080910");
@@ -226,7 +226,7 @@ describe("La ressource profil", () => {
       assert.equal(profilAJour!.nom, "Dujardin");
       assert.equal(profilAJour!.prenom, "Jean");
       assert.equal(profilAJour!.organisation.nom, "DINUM");
-      assert.equal(profilAJour!.organisation.siret, "12345678");
+      assert.equal(profilAJour!.organisation.siret, "13002526500013");
       assert.equal(profilAJour!.organisation.departement, "33");
       assert.deepEqual(profilAJour!.domainesSpecialite, ["RSSI", "JURI"]);
       assert.equal(profilAJour!.telephone, "0607080910");
@@ -247,7 +247,7 @@ describe("La ressource profil", () => {
         ).send({
           nom: "Dujardin",
           prenom: "JEAN",
-          organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
+          organisation: { nom: "DINUM", siret: "13002526500013", departement: "33" },
           domainesSpecialite: ["RSSI"],
           telephone: "0607080910",
         });
