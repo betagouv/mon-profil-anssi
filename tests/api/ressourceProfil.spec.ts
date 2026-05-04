@@ -92,7 +92,7 @@ describe("La ressource profil", () => {
 
     it("aseptise les paramètres", async () => {
       const jeanInferieurDujardin = {
-        email: "jean&lt;dujardin",
+        email: "jean&lt;dujardin@beta.fr",
         nom: "Jean Dujardin",
         prenom: " d",
         organisation: { nom: "DINUM", siret: "12345678", departement: "33" },
@@ -100,7 +100,7 @@ describe("La ressource profil", () => {
       };
       await entrepotProfil.ajoute(new Profil(jeanInferieurDujardin));
 
-      const reponse = await requeteGETAuthentifiee("/profil/jean<dujardin");
+      const reponse = await requeteGETAuthentifiee("/profil/jean<dujardin@beta.fr");
 
       assert.equal(reponse.status, 200);
       assert.equal(reponse.body.nom, "Jean Dujardin");
