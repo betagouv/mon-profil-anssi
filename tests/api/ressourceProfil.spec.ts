@@ -98,6 +98,12 @@ describe("La ressource profil", () => {
       assert.equal(reponse.status, 401);
     });
 
+    it("rejette les emails invalides", async() => {
+      const reponse = await requeteGETAuthentifiee("/profil/pas-un-email");
+
+      assert.equal(reponse.status, 400);
+    });
+
     it("est insensible à la casse de l'email", async () => {
       const reponse = await requeteGETAuthentifiee("/profil/JEAN@beta.fr");
 
@@ -111,12 +117,6 @@ describe("La ressource profil", () => {
         .put(url)
         .auth("mss-JWT", { type: "bearer" })
         .set("Accept", "application/json");
-
-    it("répond 200", async () => {
-      const reponse = await requetePUTAuthentifiee("/profil/jean@beta.fr");
-
-      assert.equal(reponse.status, 200);
-    });
 
     it("mets à jour le profil connu", async () => {
       const reponse = await requetePUTAuthentifiee("/profil/jean@beta.fr").send(
@@ -207,6 +207,172 @@ describe("La ressource profil", () => {
 
         assert.equal(reponse.badRequest, true);
         assert.equal(reponse.body.erreur, "Le champ [prenom] est obligatoire");
+      });
+    });
+
+    describe("valide les paramètres", async() => {
+      const payloadValide = {
+        email: "jeandujardin@beta.fr",
+        nom: "Dujardin",
+        prenom: "Jean",
+        organisation: { nom: "DINUM", siret: "13002526500013", departement: "33" },
+        domainesSpecialite: ["RSSI", "JURI"],
+        telephone: "0607080910",
+      };
+
+      it("rejette les emails invalides en paramètre de la requête lors d'une création", async() => {
+        const reponse = await requetePUTAuthentifiee(
+          "/profil/jean>@beta.fr",
+        ).send({});
+
+        assert.equal(reponse.status, 400);
+        assert.equal(reponse.body.erreurs.fieldErrors.params[0], "L'adresse email existante est invalide");
+      });
+
+      it("rejette les emails invalides en paramètre de la requête lors d'une mise à jour", async() => {
+        const reponse = await requetePUTAuthentifiee(
+          "/profil/jean>@beta.fr",
+        ).send({
+          ...payloadValide,
+        });
+
+        assert.equal(reponse.status, 400);
+        assert.equal(reponse.body.erreurs.fieldErrors.params[0], "L'adresse email existante est invalide");
+      });
+
+      it("rejette les emails invalides dans le corps de la requête", async() => {
+        const reponse = await requetePUTAuthentifiee(
+          "/profil/jean@beta.fr",
+        ).send({
+          ...payloadValide,
+          email: "pas-un-email",
+        });
+
+        assert.equal(reponse.status, 400);
+        assert.equal(reponse.body.erreurs.fieldErrors.body[0], "L'adresse email à mettre à jour est invalide");
+      });
+
+      it("rejette les noms invalides", async() => {
+        const reponse = await requetePUTAuthentifiee(
+          "/profil/jean@beta.fr",
+        ).send({
+          ...payloadValide,
+          nom: 42,
+        });
+
+        assert.equal(reponse.status, 400);
+        assert.equal(reponse.body.erreurs.fieldErrors.body[0], "Le nom est invalide");
+      });
+
+      it("rejette les prénoms invalides", async() => {
+        const reponse = await requetePUTAuthentifiee(
+          "/profil/jean@beta.fr",
+        ).send({
+          ...payloadValide,
+          prenom: 42,
+        });
+
+        assert.equal(reponse.status, 400);
+        assert.equal(reponse.body.erreurs.fieldErrors.body[0], "Le prénom est invalide");
+      });
+
+      describe("rejette les organisations invalides", async() => {
+        it("rejette une organisation qui n'a pas la bonne structure de données", async() => {
+          const reponse = await requetePUTAuthentifiee(
+            "/profil/jean@beta.fr",
+          ).send({
+            ...payloadValide,
+            organisation: 42,
+          });
+
+          assert.equal(reponse.status, 400);
+          assert.equal(reponse.body.erreurs.fieldErrors.body[0], "L'organisation est invalide");
+        });
+
+        it("rejette une organisation dont le nom est invalide", async() => {
+          const reponse = await requetePUTAuthentifiee(
+            "/profil/jean@beta.fr",
+          ).send({
+            ...payloadValide,
+            organisation: {
+              ...(payloadValide.organisation),
+              nom: 42,
+            },
+          });
+
+          assert.equal(reponse.status, 400);
+          assert.equal(reponse.body.erreurs.fieldErrors.body[0], "Le nom de l'organisation est invalide");
+        });
+
+        it("rejette une organisation dont le siret est invalide", async() => {
+          const reponse = await requetePUTAuthentifiee(
+            "/profil/jean@beta.fr",
+          ).send({
+            ...payloadValide,
+            organisation: {
+              ...(payloadValide.organisation),
+              siret: 42,
+            },
+          });
+
+          assert.equal(reponse.status, 400);
+          assert.equal(reponse.body.erreurs.fieldErrors.body[0], "Le siret de l'organisation est invalide");
+        });
+
+        it("rejette une organisation dont le département est invalide", async() => {
+          const envoye = {
+            ...payloadValide,
+            organisation: {
+              ...(payloadValide.organisation),
+              departement: 42,
+            },
+          };
+
+          const reponse = await requetePUTAuthentifiee(
+            "/profil/jean@beta.fr",
+          ).send(envoye);
+
+          assert.equal(reponse.status, 400);
+          assert.equal(reponse.body.erreurs.fieldErrors.body[0], "Le département de l'organisation est invalide");
+        });
+      });
+
+      describe("rejette les domaines de spécialité invalides", async() => {
+        it("rejette le domaine de spécialités s'il ne respecte pas la bonne structure de données", async() => {
+          const reponse = await requetePUTAuthentifiee(
+            "/profil/jean@beta.fr",
+          ).send({
+            ...payloadValide,
+            domainesSpecialite: 42,
+          });
+
+          assert.equal(reponse.status, 400);
+          assert.equal(reponse.body.erreurs.fieldErrors.body[0], "Les domaines de spécialité sont invalides");
+        });
+
+        it("quand les spécilités n'ont pas de sens", async() => {
+          const reponse = await requetePUTAuthentifiee(
+            "/profil/jean@beta.fr",
+          ).send({
+            ...payloadValide,
+            domainesSpecialite: [42, 4.2],
+          });
+
+          assert.equal(reponse.status, 400);
+          assert.equal(reponse.body.erreurs.fieldErrors.body[0], "Les domaines de spécialité sont invalides");
+        });
+      });
+
+      it("rejette les numéros de téléphone invalides", async() => {
+        const reponse = await requetePUTAuthentifiee(
+          "/profil/jean@beta.fr",
+        ).send({
+          ...payloadValide,
+          telephone: 42,
+        });
+
+        assert.equal(reponse.status, 400);
+        assert.equal(reponse.body.erreurs.fieldErrors.body[0], "Le numéro de téléphone est invalide");
       });
     });
 
