@@ -1,12 +1,19 @@
 import { Request, Router } from "express";
+import * as z from "zod";
 import { DonneesCreationProfil, Profil } from "../metier/profil";
 import { ConfigurationServeur } from "./configurationServeur";
 import { ErreurDonneesObligatoiresManquantes } from "../metier/erreurDonneesObligatoiresManquantes";
+import { schemaDonneesEcritureProfil } from "./schemas";
 
 type DemandeInscription = {
   dateInscription: string;
   donneesProfil: DonneesCreationProfil;
 };
+
+const schemaAjoutInscription = z.intersection(
+  z.object({ service: z.string().optional(), }),
+  z.object({ body: z.array(schemaDonneesEcritureProfil) }),
+);
 
 const ressourceInscriptions = ({
   entrepotProfil,
@@ -17,6 +24,7 @@ const ressourceInscriptions = ({
   routeur.post(
     "/",
     middleware.decodeJeton(),
+    middleware.valideRequete(schemaAjoutInscription),
     async (requete, reponse) => {
       // #swagger.tags = ['Inscriptions']
       // #swagger.summary = "Inscris des utilisateurs à un service"
