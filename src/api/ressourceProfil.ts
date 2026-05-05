@@ -1,11 +1,11 @@
 import { Request, Response, Router } from "express";
-import { ConfigurationServeur } from "./configurationServeur";
-import { versProfilAPI } from "./profilAPI";
 import { ErreurDonneesObligatoiresManquantes } from "../metier/erreurDonneesObligatoiresManquantes";
 import { fabriqueServiceInscription } from "../metier/serviceInscription";
+import { ConfigurationServeur } from "./configurationServeur";
+import { versProfilAPI } from "./profilAPI";
 import {
-  schemaLectureProfil,
-  schemaCorpsPourMiseAJourProfil,
+  schemaBodyPostProfil,
+  schemaParametresGetProfil,
   schemaParametresPourMiseAJourProfil,
 } from "./schemas";
 
@@ -23,7 +23,7 @@ const ressourceProfil = ({
   routeur.get(
     "/:email",
     middleware.decodeJeton(),
-    middleware.valideRequete(schemaLectureProfil),
+    middleware.valideRequete(schemaParametresGetProfil),
     async (requete: Request, reponse: Response) => {
       // #swagger.tags = ['Profil']
       // #swagger.summary = "Récupère les informations d'un profil"
@@ -38,7 +38,9 @@ const ressourceProfil = ({
             }]
        */
       const { email } = requete.params;
-      const profil = await entrepotProfil.parEmail((email as string).toLowerCase());
+      const profil = await entrepotProfil.parEmail(
+        (email as string).toLowerCase(),
+      );
       if (!profil) {
         // #swagger.responses[404] = { description: 'L\'utilisateur est introuvable' }
         reponse.sendStatus(404);
@@ -59,7 +61,7 @@ const ressourceProfil = ({
     "/:email",
     middleware.decodeJeton(),
     middleware.valideRequete(schemaParametresPourMiseAJourProfil),
-    middleware.valideRequete(schemaCorpsPourMiseAJourProfil),
+    middleware.valideRequete(schemaBodyPostProfil),
     async (requete: Request, reponse) => {
       // #swagger.tags = ['Profil']
       // #swagger.summary = "Crée ou mets à jour le profil avec les informations"
