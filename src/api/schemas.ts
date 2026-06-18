@@ -65,7 +65,7 @@ export const schemaDonneesEcritureProfil = z.strictObject({
     .optional(),
   domainesSpecialite: z
     .array(
-      z.string("Les domaines de spécialité sont invalides").max(42),
+      z.string("Les domaines de spécialité sont invalides").max(1024),
       "Les domaines de spécialité sont invalides",
     )
     .max(100, "Les domaines de spécialité sont invalides")
